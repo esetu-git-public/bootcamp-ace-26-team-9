@@ -7,6 +7,7 @@ import Input from "../../components/ui/Input";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -14,16 +15,24 @@ function Login() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log(data);
 
-    toast.success("Login Successful!");
+    setLoading(true);
+
+    // Simulate API Call
+    setTimeout(() => {
+      toast.success("Login Successful!");
+      setLoading(false);
+    }, 2000);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-700 to-blue-500 flex">
+
       {/* Left Side */}
       <div className="hidden lg:flex w-1/2 text-white p-16 flex-col justify-center">
+
         <h1 className="text-6xl font-bold mb-6">
           Employee Attrition
         </h1>
@@ -36,10 +45,12 @@ function Login() {
           Empower HR teams with AI-driven insights to predict employee
           attrition and improve workforce retention.
         </p>
+
       </div>
 
       {/* Right Side */}
       <div className="w-full lg:w-1/2 flex justify-center items-center p-8">
+
         <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-10">
 
           <h2 className="text-4xl font-bold text-center">
@@ -117,11 +128,7 @@ function Login() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-4 top-3 text-gray-500 hover:text-blue-600"
               >
-                {showPassword ? (
-                  <EyeOff size={20} />
-                ) : (
-                  <Eye size={20} />
-                )}
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
 
             </div>
@@ -148,14 +155,19 @@ function Login() {
 
             </div>
 
-            <Button type="submit">
+            <Button
+              type="submit"
+              loading={loading}
+            >
               Login
             </Button>
 
           </form>
 
         </div>
+
       </div>
+
     </div>
   );
 }
