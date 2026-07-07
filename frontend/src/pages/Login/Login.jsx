@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 
 function Login() {
+  const navigate = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -20,10 +24,14 @@ function Login() {
 
     setLoading(true);
 
-    // Simulate API Call
+    // Simulating backend login
     setTimeout(() => {
       toast.success("Login Successful!");
+
       setLoading(false);
+
+      // Navigate to Dashboard
+      navigate("/dashboard");
     }, 2000);
   };
 
@@ -128,7 +136,11 @@ function Login() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-4 top-3 text-gray-500 hover:text-blue-600"
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showPassword ? (
+                  <EyeOff size={20} />
+                ) : (
+                  <Eye size={20} />
+                )}
               </button>
 
             </div>
