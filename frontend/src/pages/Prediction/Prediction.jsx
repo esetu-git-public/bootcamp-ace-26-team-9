@@ -1,77 +1,77 @@
+import { useForm } from "react-hook-form";
 import DashboardLayout from "../../components/layout/DashboardLayout";
-import Input from "../../components/ui/Input";
+
+import EmployeeInformation from "./EmployeeInformation";
+import JobInformation from "./JobInformation";
+import SalaryInformation from "./SalaryInformation";
+import ExperienceInformation from "./ExperienceInformation";
+import PerformanceInformation from "./PerformanceInformation";
+import AdditionalInformation from "./AdditionalInformation";
+import PredictButton from "./PredictButton";
 
 function Prediction() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
   return (
     <DashboardLayout>
+      <div className="max-w-7xl mx-auto">
 
-      <h1 className="text-3xl font-bold text-slate-800">
-        Employee Attrition Prediction
-      </h1>
+        <h1 className="text-3xl font-bold text-slate-800">
+          Employee Attrition Prediction
+        </h1>
 
-      <p className="text-gray-500 mt-2">
-        Enter employee details to predict employee attrition.
-      </p>
+        <p className="text-gray-500 mt-2 mb-8">
+          Fill in employee information to predict attrition.
+        </p>
 
-      <div className="bg-white rounded-2xl shadow-lg p-8 mt-8">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-8"
+        >
 
-        <h2 className="text-2xl font-semibold mb-8">
-          Employee Information
-        </h2>
+          <EmployeeInformation
+            register={register}
+            errors={errors}
+          />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <JobInformation
+            register={register}
+            errors={errors}
+          />
 
-          <div>
+          <SalaryInformation
+            register={register}
+            errors={errors}
+          />
 
-            <label className="block mb-2 font-medium">
-              Age
-            </label>
+          <ExperienceInformation
+            register={register}
+            errors={errors}
+          />
 
-            <Input
-              type="number"
-              placeholder="Enter Age"
-            />
+          <PerformanceInformation
+            register={register}
+            errors={errors}
+          />
 
-          </div>
+          <AdditionalInformation
+            register={register}
+            errors={errors}
+          />
 
-          <div>
+          <PredictButton />
 
-            <label className="block mb-2 font-medium">
-              Gender
-            </label>
-
-            <select className="w-full rounded-xl border border-gray-300 px-4 py-3">
-
-              <option>Male</option>
-
-              <option>Female</option>
-
-            </select>
-
-          </div>
-
-          <div>
-
-            <label className="block mb-2 font-medium">
-              Marital Status
-            </label>
-
-            <select className="w-full rounded-xl border border-gray-300 px-4 py-3">
-
-              <option>Single</option>
-
-              <option>Married</option>
-
-              <option>Divorced</option>
-
-            </select>
-
-          </div>
-
-        </div>
+        </form>
 
       </div>
-
     </DashboardLayout>
   );
 }
