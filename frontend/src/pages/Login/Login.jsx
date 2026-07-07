@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
@@ -15,15 +16,14 @@ function Login() {
 
   const onSubmit = (data) => {
     console.log(data);
-    alert("Login Successful");
+
+    toast.success("Login Successful!");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-700 to-blue-500 flex">
-
       {/* Left Side */}
       <div className="hidden lg:flex w-1/2 text-white p-16 flex-col justify-center">
-
         <h1 className="text-6xl font-bold mb-6">
           Employee Attrition
         </h1>
@@ -36,12 +36,10 @@ function Login() {
           Empower HR teams with AI-driven insights to predict employee
           attrition and improve workforce retention.
         </p>
-
       </div>
 
       {/* Right Side */}
       <div className="w-full lg:w-1/2 flex justify-center items-center p-8">
-
         <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-10">
 
           <h2 className="text-4xl font-bold text-center">
@@ -137,11 +135,8 @@ function Login() {
             <div className="flex justify-between text-sm mb-6">
 
               <label className="flex items-center gap-2">
-
                 <input type="checkbox" />
-
                 Remember Me
-
               </label>
 
               <a
@@ -160,9 +155,7 @@ function Login() {
           </form>
 
         </div>
-
       </div>
-
     </div>
   );
 }
