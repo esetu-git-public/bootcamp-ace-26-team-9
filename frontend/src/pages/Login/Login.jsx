@@ -1,187 +1,231 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import {
+  FaUserTie,
+  FaEye,
+  FaEyeSlash,
+} from "react-icons/fa";
 
-import Button from "../../components/ui/Button";
-import Input from "../../components/ui/Input";
+import InputField from "../../components/Input/InputField";
+import PrimaryButton from "../../components/Button/PrimaryButton";
 import { supabase } from "../../services/supabaseClient";
 
-function Login() {
+const Login = () => {
   const navigate = useNavigate();
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
+
+  const [errors, setErrors] = useState({});
+
   const [loading, setLoading] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const handleLogin = async () => {
+    let newErrors = {};
 
-  const onSubmit = async (data) => {
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    }
+
+    if (!password.trim()) {
+      newErrors.password = "Password is required";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) return;
+
     setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
+        email,
+        password,
       });
 
       if (error) {
-        toast.error(error.message || "Invalid email or password");
+        setErrors({ general: error.message || "Invalid email or password" });
       } else {
-        toast.success("Login Successful!");
         navigate("/dashboard");
       }
     } catch (err) {
       console.error("Login error:", err);
-      toast.error("An unexpected error occurred. Please try again.");
+      setErrors({ general: "An unexpected error occurred. Please try again." });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-700 to-blue-500 flex">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-700 to-indigo-900 flex items-center justify-center px-6 py-10">
 
-      {/* Left Side */}
-      <div className="hidden lg:flex w-1/2 text-white p-16 flex-col justify-center">
+      <div className="grid md:grid-cols-2 bg-white rounded-3xl shadow-2xl overflow-hidden max-w-6xl w-full">
 
-        <h1 className="text-6xl font-bold mb-6">
-          Employee Attrition
-        </h1>
+        {/* LEFT PANEL */}
 
-        <h2 className="text-4xl font-semibold mb-6">
-          Prediction System
-        </h2>
+        <div className="hidden md:flex flex-col justify-center items-center bg-gradient-to-br from-blue-700 to-indigo-900 text-white p-12">
 
-        <p className="text-xl leading-9 text-blue-100">
-          Empower HR teams with AI-driven insights to predict employee
-          attrition and improve workforce retention.
-        </p>
+          <FaUserTie size={90} />
 
-      </div>
+          <h1 className="text-5xl font-extrabold text-center mt-8">
+            Employee
+            <br />
+            Attrition Prediction
+          </h1>
 
-      {/* Right Side */}
-      <div className="w-full lg:w-1/2 flex justify-center items-center p-8">
-
-        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-10">
-
-          <h2 className="text-4xl font-bold text-center">
-            Welcome Back
-          </h2>
-
-          <p className="text-gray-500 text-center mt-2 mb-8">
-            Login to continue
+          <p className="text-center mt-8 leading-8 text-blue-100">
+            AI-powered HR analytics platform that predicts employee
+            attrition and helps organizations improve retention.
           </p>
 
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="grid grid-cols-2 gap-5 mt-12 w-full">
 
-            {/* Email */}
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 text-center">
 
-            <label className="font-medium">
-              Email
-            </label>
+              <h2 className="text-3xl font-bold">
+                95%
+              </h2>
 
-            <div className="relative mt-2">
-
-              <Mail
-                size={18}
-                className="absolute left-4 top-4 text-gray-400"
-              />
-
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                className="pl-12"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^\S+@\S+$/i,
-                    message: "Enter a valid email",
-                  },
-                })}
-              />
+              <p className="mt-2 text-sm">
+                Prediction Accuracy
+              </p>
 
             </div>
 
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1 mb-4">
-                {errors.email.message}
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-5 text-center">
+
+              <h2 className="text-3xl font-bold">
+                24/7
+              </h2>
+
+              <p className="mt-2 text-sm">
+                AI Monitoring
               </p>
-            )}
 
-            {/* Password */}
+            </div>
 
-            <label className="font-medium">
+          </div>
+
+        </div>
+
+        {/* RIGHT PANEL */}
+
+        <div className="p-12">
+
+          <div className="mb-8">
+
+            <p className="text-blue-600 font-semibold uppercase tracking-widest text-sm">
+              Employee Attrition Prediction System
+            </p>
+
+            <h2 className="text-4xl font-bold mt-2 text-gray-800">
+              Welcome Back 👋
+            </h2>
+
+            <p className="text-gray-500 mt-2">
+              Sign in with your company account.
+            </p>
+
+          </div>
+
+          {/* General error message */}
+          {errors.general && (
+            <p className="text-red-500 text-sm mb-4 bg-red-50 border border-red-200 px-4 py-3 rounded-xl">
+              {errors.general}
+            </p>
+          )}
+
+          <InputField
+            label="Email"
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          {errors.email && (
+            <p className="text-red-500 text-sm -mt-3 mb-4">
+              {errors.email}
+            </p>
+          )}
+
+          <div className="mb-5">
+
+            <label className="block font-medium mb-2">
               Password
             </label>
 
-            <div className="relative mt-2">
+            <div className="relative">
 
-              <Lock
-                size={18}
-                className="absolute left-4 top-4 text-gray-400"
-              />
-
-              <Input
+              <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter your password"
-                className="pl-12 pr-12"
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 6,
-                    message: "Minimum 6 characters",
-                  },
-                })}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border rounded-xl px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
 
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-3 text-gray-500 hover:text-blue-600"
+                className="absolute right-4 top-4 text-gray-500"
+                onClick={() =>
+                  setShowPassword(!showPassword)
+                }
               >
                 {showPassword ? (
-                  <EyeOff size={20} />
+                  <FaEyeSlash />
                 ) : (
-                  <Eye size={20} />
+                  <FaEye />
                 )}
               </button>
 
             </div>
 
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1 mb-6">
-                {errors.password.message}
+              <p className="text-red-500 text-sm mt-2">
+                {errors.password}
               </p>
             )}
 
-            <div className="flex justify-between text-sm mb-6">
+          </div>
 
-              <label className="flex items-center gap-2">
-                <input type="checkbox" />
-                Remember Me
-              </label>
+          <div className="flex justify-between items-center mb-8">
 
-              <a
-                href="#"
-                className="text-blue-600 hover:underline"
-              >
-                Forgot Password?
-              </a>
+            <label className="flex items-center gap-2 text-sm">
 
-            </div>
+              <input
+                type="checkbox"
+                className="accent-blue-600"
+              />
 
-            <Button
-              type="submit"
-              loading={loading}
-            >
-              Login
-            </Button>
+              Remember Me
 
-          </form>
+            </label>
+
+            <button className="text-blue-600 hover:text-blue-800 font-medium">
+              Forgot Password?
+            </button>
+
+          </div>
+
+          <PrimaryButton
+            title="Login"
+            loading={loading}
+            onClick={handleLogin}
+          />
+
+          <div className="text-center mt-10">
+
+            <p className="text-gray-400 text-sm">
+              © 2026 Employee Attrition Prediction System
+            </p>
+
+            <p className="text-gray-400 text-xs mt-2">
+              Version 1.0
+            </p>
+
+          </div>
 
         </div>
 
@@ -189,6 +233,6 @@ function Login() {
 
     </div>
   );
-}
+};
 
 export default Login;

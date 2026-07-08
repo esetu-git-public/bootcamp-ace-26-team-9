@@ -1,27 +1,50 @@
-import DashboardLayout from "../../components/layout/DashboardLayout";
+import MainLayout from "../../layouts/MainLayout";
 
-function Dashboard() {
+import DashboardCards from "../../components/Dashboard/DashboardCards";
+import AttritionChart from "../../components/Dashboard/AttritionChart";
+import DepartmentChart from "../../components/Dashboard/DepartmentChart";
+import RecentPredictions from "../../components/Dashboard/RecentPredictions";
+
+const Dashboard = () => {
   return (
-    <DashboardLayout>
-      <h1 className="text-3xl font-bold text-slate-800">
-        Dashboard
-      </h1>
+    <MainLayout>
+      <div>
 
-      <p className="text-gray-500 mt-2">
-        Welcome to Employee Attrition Prediction System
-      </p>
+        {/* Header */}
 
-      <div className="bg-white rounded-2xl shadow-lg p-8 mt-8">
-        <h2 className="text-2xl font-semibold">
-          Dashboard Overview
-        </h2>
+        <div className="mb-8">
 
-        <p className="text-gray-500 mt-4">
-          Dashboard widgets will be added here...
-        </p>
+          <h1 className="text-3xl font-bold text-gray-800">
+            Dashboard
+          </h1>
+
+          <p className="text-gray-500 mt-2">
+            Welcome to the Employee Attrition Prediction System
+          </p>
+
+        </div>
+
+        {/* KPI Cards */}
+
+        <DashboardCards />
+
+        {/* Charts */}
+
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+
+          <AttritionChart />
+
+          <DepartmentChart />
+
+        </div>
+
+        {/* Recent Predictions */}
+
+        <RecentPredictions />
+
       </div>
-    </DashboardLayout>
+    </MainLayout>
   );
-}
+};
 
 export default Dashboard;

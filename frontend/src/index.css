@@ -1,11 +1,9 @@
-/* Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Global Styles */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
 * {
   margin: 0;
   padding: 0;
@@ -13,15 +11,6 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
-  background-color: #F8FAFC;
-  color: #1E293B;
-}
-
-a {
-  text-decoration: none;
-}
-
-button {
-  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  background: #f8fafc;
 }
