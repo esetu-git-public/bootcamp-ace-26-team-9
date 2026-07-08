@@ -11,3 +11,7 @@ psycopg2-binary
 pyjwt
 cryptography
 python-dotenv
+sqlalchemy
+passlib
+bcrypt
+email-validator
