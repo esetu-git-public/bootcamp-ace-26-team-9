@@ -1,0 +1,92 @@
+import {
+  FaHome,
+  FaChartLine,
+  FaUsers,
+  FaFileAlt,
+  FaCog,
+  FaSignOutAlt,
+} from "react-icons/fa";
+import { NavLink } from "react-router-dom";
+
+const Sidebar = () => {
+  const menuItems = [
+    {
+      name: "Dashboard",
+      icon: <FaHome />,
+      path: "/dashboard",
+    },
+    {
+      name: "Prediction",
+      icon: <FaChartLine />,
+      path: "/prediction",
+    },
+    {
+      name: "Employees",
+      icon: <FaUsers />,
+      path: "/employees",
+    },
+    {
+      name: "Reports",
+      icon: <FaFileAlt />,
+      path: "/reports",
+    },
+    {
+      name: "Settings",
+      icon: <FaCog />,
+      path: "/settings",
+    },
+  ];
+
+  return (
+    <div className="w-64 min-h-screen bg-slate-900 text-white flex flex-col">
+
+      <div className="text-center py-8 border-b border-slate-700">
+
+        <h1 className="text-2xl font-bold">
+          HR Analytics
+        </h1>
+
+        <p className="text-sm text-gray-400 mt-1">
+          Employee Attrition
+        </p>
+
+      </div>
+
+      <div className="flex-1 px-4 py-6">
+
+        {menuItems.map((item) => (
+          <NavLink
+            key={item.name}
+            to={item.path}
+            className={({ isActive }) =>
+              `flex items-center gap-3 p-3 rounded-xl mb-3 transition ${
+                isActive
+                  ? "bg-blue-600"
+                  : "hover:bg-slate-800"
+              }`
+            }
+          >
+            {item.icon}
+            {item.name}
+          </NavLink>
+        ))}
+
+      </div>
+
+      <div className="p-4 border-t border-slate-700">
+
+        <button className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-600 transition">
+
+          <FaSignOutAlt />
+
+          Logout
+
+        </button>
+
+      </div>
+
+    </div>
+  );
+};
+
+export default Sidebar;

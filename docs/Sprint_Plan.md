@@ -5,6 +5,7 @@
 - Create product backlog
 - Prepare user stories
 - Set up GitHub repository
+- Setup the Jira Dashboard
 
 ## Sprint 2 (Day 3-4)
 - Develop frontend
@@ -22,3 +23,5 @@
 - Documentation
 - Presentation
 - Project submission
+
+
