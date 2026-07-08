@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import router
 
-# Database
 from app.database.database import engine
 from app.database.models import Base
 
@@ -14,50 +13,31 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Create Database Tables Automatically
+# Create Database Tables
 Base.metadata.create_all(bind=engine)
 
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],      # Change to frontend URL in production
+    allow_origins=["*"],  # Change this in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include All Routes
+# Include all routes
 app.include_router(router)
 
 
-# Root API
-@app.get("/", tags=["General"])
-def root():
-    return {
-        "message": "Employee Attrition Prediction API",
-        "status": "Running"
-    }
-
-
-# Health Check API
-@app.get("/health", tags=["General"])
-def health():
-    return {
-        "status": "Healthy"
-    }
-
-
-# Startup Event
 @app.on_event("startup")
 def startup_event():
     print("======================================")
-    print(" Employee Attrition Prediction API ")
+    print(" Employee Attrition Prediction API")
     print(" Server Started Successfully")
     print(" Swagger UI : http://127.0.0.1:8000/docs")
     print("======================================")
 
 
-# Shutdown Event
 @app.on_event("shutdown")
 def shutdown_event():
     print("======================================")
