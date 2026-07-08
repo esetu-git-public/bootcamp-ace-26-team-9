@@ -18,6 +18,7 @@ from app.services.metrics_service import MetricsService
 from app.database.database import get_db
 from app.database.curd import CRUDService
 from fastapi import HTTPException
+from app.auth.auth import get_current_user
 
 router = APIRouter()
 
@@ -46,47 +47,47 @@ def health():
 # ===========================
 
 @router.get("/dataset/info", tags=["Dataset"])
-def dataset_info():
+def dataset_info(current_user: dict = Depends(get_current_user)):
     return DataService.get_dataset_info()
 
 
 @router.get("/dataset/missing-values", tags=["Dataset"])
-def missing_values():
+def missing_values(current_user: dict = Depends(get_current_user)):
     return DataService.get_missing_values()
 
 
 @router.get("/dataset/duplicates", tags=["Dataset"])
-def duplicates():
+def duplicates(current_user: dict = Depends(get_current_user)):
     return DataService.get_duplicates()
 
 
 @router.get("/dataset/data-types", tags=["Dataset"])
-def data_types():
+def data_types(current_user: dict = Depends(get_current_user)):
     return DataService.get_data_types()
 
 
 @router.get("/dataset/target-distribution", tags=["Dataset"])
-def target_distribution():
+def target_distribution(current_user: dict = Depends(get_current_user)):
     return DataService.get_target_distribution()
 
 
 @router.get("/dataset/numerical-columns", tags=["Dataset"])
-def numerical_columns():
+def numerical_columns(current_user: dict = Depends(get_current_user)):
     return DataService.get_numerical_columns()
 
 
 @router.get("/dataset/categorical-columns", tags=["Dataset"])
-def categorical_columns():
+def categorical_columns(current_user: dict = Depends(get_current_user)):
     return DataService.get_categorical_columns()
 
 
 @router.get("/dataset/summary", tags=["Dataset"])
-def summary():
+def summary(current_user: dict = Depends(get_current_user)):
     return DataService.get_summary_statistics()
 
 
 @router.get("/dataset/preprocess", tags=["Dataset"])
-def preprocess():
+def preprocess(current_user: dict = Depends(get_current_user)):
 
     df = DataService.load_dataset()
 
@@ -100,7 +101,7 @@ def preprocess():
 
 
 @router.get("/dataset/features", tags=["Dataset"])
-def get_features():
+def get_features(current_user: dict = Depends(get_current_user)):
 
     df = DataService.load_dataset()
 
@@ -120,7 +121,7 @@ def get_features():
 # ===========================
 
 @router.post("/train", tags=["Training"])
-def train_model():
+def train_model(current_user: dict = Depends(get_current_user)):
     return TrainingService.train()
 
 
@@ -131,7 +132,8 @@ def train_model():
 @router.post("/predict", tags=["Prediction"])
 def predict(
     employee: EmployeeData,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
 ):
 
     input_df = pd.DataFrame([employee.model_dump()])
@@ -154,7 +156,7 @@ def predict(
 # ===========================
 
 @router.post("/predict/csv", tags=["Batch Prediction"])
-def batch_prediction(file: UploadFile = File(...)):
+def batch_prediction(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
 
     upload_folder = Path("uploads")
     upload_folder.mkdir(exist_ok=True)
@@ -174,17 +176,19 @@ def batch_prediction(file: UploadFile = File(...)):
 # ===========================
 
 @router.get("/model/metrics", tags=["Model"])
-def model_metrics():
+def model_metrics(current_user: dict = Depends(get_current_user)):
     return MetricsService.get_metrics()
 @router.get("/predictions", tags=["Prediction History"])
 def get_predictions(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
 ):
     return CRUDService.get_predictions(db)
 @router.get("/predictions/{prediction_id}", tags=["Prediction History"])
 def get_prediction(
     prediction_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
 ):
     prediction = CRUDService.get_prediction_by_id(
         db,
@@ -201,7 +205,8 @@ def get_prediction(
 @router.delete("/predictions/{prediction_id}", tags=["Prediction History"])
 def delete_prediction(
     prediction_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
 ):
     prediction = CRUDService.delete_prediction(
         db,

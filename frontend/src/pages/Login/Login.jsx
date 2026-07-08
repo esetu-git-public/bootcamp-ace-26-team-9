@@ -6,6 +6,7 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import { supabase } from "../../services/supabaseClient";
 
 function Login() {
   const navigate = useNavigate();
@@ -20,19 +21,25 @@ function Login() {
   } = useForm();
 
   const onSubmit = async (data) => {
-    console.log(data);
-
     setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
 
-    // Simulating backend login
-    setTimeout(() => {
-      toast.success("Login Successful!");
-
+      if (error) {
+        toast.error(error.message || "Invalid email or password");
+      } else {
+        toast.success("Login Successful!");
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
       setLoading(false);
-
-      // Navigate to Dashboard
-      navigate("/dashboard");
-    }, 2000);
+    }
   };
 
   return (

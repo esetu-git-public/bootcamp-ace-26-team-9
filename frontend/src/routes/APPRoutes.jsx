@@ -7,6 +7,7 @@ import Employees from "../pages/Employees/Employees";
 import Analytics from "../pages/Analytics/Analytics";
 import Reports from "../pages/Reports/Reports";
 import Settings from "../pages/Settings/Settings";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 function AppRoutes() {
   return (
@@ -17,26 +18,68 @@ function AppRoutes() {
         <Route path="/" element={<Login />} />
 
         {/* Dashboard */}
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Prediction */}
-        <Route path="/prediction" element={<Prediction />} />
+        <Route
+          path="/prediction"
+          element={
+            <ProtectedRoute>
+              <Prediction />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Employees */}
-        <Route path="/employees" element={<Employees />} />
+        <Route
+          path="/employees"
+          element={
+            <ProtectedRoute>
+              <Employees />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Analytics */}
-        <Route path="/analytics" element={<Analytics />} />
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute>
+              <Analytics />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Reports */}
-        <Route path="/reports" element={<Reports />} />
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <Reports />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Settings */}
-        <Route path="/settings" element={<Settings />} />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          }
+        />
 
       </Routes>
     </BrowserRouter>
   );
 }
 
-export default AppRoutes;
+export default AppRoutes;

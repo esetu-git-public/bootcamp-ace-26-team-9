@@ -1,4 +1,4 @@
-import api from "./api";
+import api from "./Api";
 
 export const getDatasetInfo = async () => {
   const response = await api.get("/dataset/info");

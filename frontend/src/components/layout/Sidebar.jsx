@@ -9,9 +9,20 @@ import {
 } from "lucide-react";
 
 import { NavLink, useNavigate } from "react-router-dom";
+import { supabase } from "../../services/supabaseClient";
 
 function Sidebar() {
   const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    } finally {
+      navigate("/");
+    }
+  };
 
   const menuItems = [
     {
@@ -47,23 +58,33 @@ function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 h-screen bg-slate-900 text-white flex flex-col">
+    <aside className="w-64 bg-slate-900 text-white flex flex-col h-screen sticky top-0">
 
-      {/* Logo */}
+      {/* Brand */}
 
-      <div className="h-20 flex items-center justify-center border-b border-slate-700">
+      <div className="p-6 border-b border-slate-800 flex items-center gap-3">
 
-        <h2 className="text-2xl font-bold text-blue-400">
-          HR Dashboard
-        </h2>
+        <BrainCircuit className="text-blue-500" size={28} />
+
+        <div>
+
+          <h2 className="font-bold text-lg leading-none">
+            EAP System
+          </h2>
+
+          <span className="text-xs text-slate-400">
+            Admin Portal
+          </span>
+
+        </div>
 
       </div>
 
       {/* Navigation */}
 
-      <nav className="flex-1 mt-6">
+      <nav className="flex-1 p-4 overflow-y-auto">
 
-        <ul className="space-y-2 px-4">
+        <ul className="space-y-2">
 
           {menuItems.map((item) => (
             <li key={item.name}>
@@ -72,8 +93,8 @@ function Sidebar() {
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-xl transition ${
                     isActive
-                      ? "bg-blue-600"
-                      : "hover:bg-slate-800"
+                      ? "bg-blue-600 text-white"
+                      : "text-slate-400 hover:bg-slate-800 hover:text-white"
                   }`
                 }
               >
@@ -92,7 +113,7 @@ function Sidebar() {
       <div className="p-4 border-t border-slate-700">
 
         <button
-          onClick={() => navigate("/")}
+          onClick={handleLogout}
           className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 py-3 rounded-xl transition"
         >
           <LogOut size={18} />
