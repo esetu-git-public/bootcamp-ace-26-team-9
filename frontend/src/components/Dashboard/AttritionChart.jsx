@@ -1,62 +1,63 @@
 import {
-  FaUsers,
-  FaUserCheck,
-  FaUserTimes,
-  FaChartLine,
-} from "react-icons/fa";
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
 
-const DashboardCards = () => {
-  const cards = [
-    {
-      title: "Total Employees",
-      value: "1,245",
-      icon: <FaUsers className="text-3xl text-blue-600" />,
-      color: "bg-blue-100",
-    },
-    {
-      title: "Active Employees",
-      value: "1,050",
-      icon: <FaUserCheck className="text-3xl text-green-600" />,
-      color: "bg-green-100",
-    },
-    {
-      title: "Likely to Leave",
-      value: "195",
-      icon: <FaUserTimes className="text-3xl text-red-600" />,
-      color: "bg-red-100",
-    },
-    {
-      title: "Attrition Rate",
-      value: "15.7%",
-      icon: <FaChartLine className="text-3xl text-purple-600" />,
-      color: "bg-purple-100",
-    },
-  ];
+const data = [
+  { month: "Jan", attrition: 12 },
+  { month: "Feb", attrition: 15 },
+  { month: "Mar", attrition: 10 },
+  { month: "Apr", attrition: 18 },
+  { month: "May", attrition: 14 },
+  { month: "Jun", attrition: 20 },
+];
 
+const AttritionChart = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
-      {cards.map((card, index) => (
-        <div
-          key={index}
-          className="bg-white rounded-2xl shadow-md p-6 flex items-center justify-between hover:shadow-xl transition"
-        >
-          <div>
-            <p className="text-gray-500">{card.title}</p>
+    <div className="bg-white rounded-2xl shadow-lg p-6">
 
-            <h2 className="text-3xl font-bold mt-2">
-              {card.value}
-            </h2>
-          </div>
+      <div className="mb-6">
 
-          <div
-            className={`w-16 h-16 rounded-2xl flex items-center justify-center ${card.color}`}
-          >
-            {card.icon}
-          </div>
-        </div>
-      ))}
+        <h2 className="text-xl font-bold text-gray-800">
+          Monthly Attrition Trend
+        </h2>
+
+        <p className="text-gray-500 text-sm">
+          Employee attrition over the last six months
+        </p>
+
+      </div>
+
+      <ResponsiveContainer width="100%" height={320}>
+
+        <LineChart data={data}>
+
+          <CartesianGrid strokeDasharray="3 3" />
+
+          <XAxis dataKey="month" />
+
+          <YAxis />
+
+          <Tooltip />
+
+          <Line
+            type="monotone"
+            dataKey="attrition"
+            stroke="#2563EB"
+            strokeWidth={3}
+          />
+
+        </LineChart>
+
+      </ResponsiveContainer>
+
     </div>
   );
 };
 
-export default DashboardCards;
+export default AttritionChart;

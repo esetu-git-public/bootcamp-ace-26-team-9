@@ -1,21 +1,28 @@
+import { useState } from "react";
 import Sidebar from "../components/Sidebar/Sidebar";
 import Navbar from "../components/Navbar/Navbar";
 
 const MainLayout = ({ children }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex bg-gray-100 min-h-screen">
 
       {/* Sidebar */}
-      <Sidebar />
+      {sidebarOpen && <Sidebar />}
 
-      {/* Right Section */}
+      {/* Main Content */}
       <div className="flex-1 flex flex-col">
 
         {/* Navbar */}
-        <Navbar />
+        <Navbar toggleSidebar={toggleSidebar} />
 
         {/* Page Content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-8 overflow-y-auto">
           {children}
         </main>
 
