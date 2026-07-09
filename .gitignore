@@ -78,3 +78,8 @@ frontend/build/
 *.swo
 *~
 .DS_Store
+
+# Runtime artifacts and uploads
+backend/app/artifacts/predictions.csv
+backend/uploads/
+*.log

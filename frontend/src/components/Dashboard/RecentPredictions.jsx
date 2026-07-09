@@ -5,49 +5,26 @@ import {
   FaTimesCircle,
 } from "react-icons/fa";
 
-const RecentPredictions = () => {
-  const predictions = [
-    {
-      id: 1,
-      employee: "John Smith",
-      department: "Sales",
-      probability: "91%",
-      risk: "High",
-      status: "Pending",
-    },
-    {
-      id: 2,
-      employee: "Sarah Johnson",
-      department: "HR",
-      probability: "63%",
-      risk: "Medium",
-      status: "Reviewed",
-    },
-    {
-      id: 3,
-      employee: "Michael Brown",
-      department: "IT",
-      probability: "18%",
-      risk: "Low",
-      status: "Completed",
-    },
-    {
-      id: 4,
-      employee: "Emily Davis",
-      department: "Finance",
-      probability: "84%",
-      risk: "High",
-      status: "Pending",
-    },
-    {
-      id: 5,
-      employee: "David Wilson",
-      department: "Marketing",
-      probability: "40%",
-      risk: "Medium",
-      status: "Reviewed",
-    },
-  ];
+const RecentPredictions = ({ predictions = [] }) => {
+  // Extract and map the first 5 predictions from the CSV data
+  const displayPredictions = predictions.slice(0, 5).map((p, index) => {
+    const isLeave = p.Prediction === "Yes" || p.Prediction === "Leave";
+    const confidence = p.Confidence || 50;
+
+    let risk = "Low";
+    if (isLeave) {
+      risk = confidence >= 70 ? "High" : "Medium";
+    }
+
+    return {
+      id: p.Employee_ID || p.EmployeeNumber || `EMP-${index + 1}`,
+      employee: p.EmployeeName || `Employee #${p.Employee_ID || p.EmployeeNumber || index + 1}`,
+      department: p.Department || "Other",
+      probability: `${confidence}%`,
+      risk: risk,
+      status: isLeave ? "Pending" : "Completed",
+    };
+  });
 
   const getRiskColor = (risk) => {
     switch (risk) {
@@ -109,7 +86,7 @@ const RecentPredictions = () => {
 
           <tbody>
 
-            {predictions.map((item) => (
+            {displayPredictions.map((item) => (
 
               <tr
                 key={item.id}

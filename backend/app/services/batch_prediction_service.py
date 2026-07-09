@@ -56,5 +56,6 @@ class BatchPredictionService:
         return {
             "status": "Success",
             "total_records": len(result),
-            "output_file": str(output_path)
+            "output_file": str(output_path),
+            "predictions": result.to_dict(orient="records")
         }

@@ -5,29 +5,36 @@ import {
   FaChartLine,
 } from "react-icons/fa";
 
-const DashboardCards = () => {
+const DashboardCards = ({ predictions = [] }) => {
+  const total = predictions.length;
+  const likelyToLeave = predictions.filter(
+    (p) => p.Prediction === "Yes" || p.Prediction === "Leave"
+  ).length;
+  const active = total - likelyToLeave;
+  const rate = total > 0 ? ((likelyToLeave / total) * 100).toFixed(1) + "%" : "0.0%";
+
   const cards = [
     {
       title: "Total Employees",
-      value: "1,245",
+      value: total.toLocaleString(),
       icon: <FaUsers className="text-3xl text-blue-600" />,
       color: "bg-blue-100",
     },
     {
       title: "Active Employees",
-      value: "1,050",
+      value: active.toLocaleString(),
       icon: <FaUserCheck className="text-3xl text-green-600" />,
       color: "bg-green-100",
     },
     {
       title: "Likely to Leave",
-      value: "195",
+      value: likelyToLeave.toLocaleString(),
       icon: <FaUserTimes className="text-3xl text-red-600" />,
       color: "bg-red-100",
     },
     {
       title: "Attrition Rate",
-      value: "15.7%",
+      value: rate,
       icon: <FaChartLine className="text-3xl text-purple-600" />,
       color: "bg-purple-100",
     },

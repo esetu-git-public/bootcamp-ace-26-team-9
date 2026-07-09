@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import MainLayout from "../../layouts/MainLayout";
 import { useDataset } from "../../context/DatasetContext";
+import EmptyState from "../../components/EmptyState";
 
 import DashboardCards from "../../components/Dashboard/DashboardCards";
 import AttritionChart from "../../components/Dashboard/AttritionChart";
@@ -8,7 +9,8 @@ import DepartmentChart from "../../components/Dashboard/DepartmentChart";
 import RecentPredictions from "../../components/Dashboard/RecentPredictions";
 
 const Dashboard = () => {
-  const { refetchSystemStats } = useDataset();
+  const { refetchSystemStats, datasetPredictions } = useDataset();
+  const isDatasetUploaded = datasetPredictions && datasetPredictions.length > 0;
 
   useEffect(() => {
     refetchSystemStats();
@@ -32,23 +34,23 @@ const Dashboard = () => {
 
         </div>
 
-        {/* KPI Cards */}
+        {!isDatasetUploaded ? (
+          <EmptyState />
+        ) : (
+          <>
+            {/* KPI Cards */}
+            <DashboardCards predictions={datasetPredictions} />
 
-        <DashboardCards />
+            {/* Charts */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+              <AttritionChart predictions={datasetPredictions} />
+              <DepartmentChart predictions={datasetPredictions} />
+            </div>
 
-        {/* Charts */}
-
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
-
-          <AttritionChart />
-
-          <DepartmentChart />
-
-        </div>
-
-        {/* Recent Predictions */}
-
-        <RecentPredictions />
+            {/* Recent Predictions */}
+            <RecentPredictions predictions={datasetPredictions} />
+          </>
+        )}
 
       </div>
     </MainLayout>

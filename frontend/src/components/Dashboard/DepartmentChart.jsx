@@ -7,14 +7,18 @@ import {
   Legend,
 } from "recharts";
 
-const DepartmentChart = () => {
-  const data = [
-    { name: "IT", value: 35 },
-    { name: "Sales", value: 25 },
-    { name: "HR", value: 15 },
-    { name: "Finance", value: 10 },
-    { name: "Marketing", value: 15 },
-  ];
+const DepartmentChart = ({ predictions = [] }) => {
+  // Calculate department distribution dynamically
+  const deptCounts = {};
+  predictions.forEach((p) => {
+    const dept = p.Department || p.department || "Other";
+    deptCounts[dept] = (deptCounts[dept] || 0) + 1;
+  });
+
+  const data = Object.keys(deptCounts).map((dept) => ({
+    name: dept,
+    value: deptCounts[dept],
+  }));
 
   const COLORS = [
     "#2563EB",
@@ -22,6 +26,8 @@ const DepartmentChart = () => {
     "#F59E0B",
     "#EF4444",
     "#8B5CF6",
+    "#06B6D4",
+    "#EC4899",
   ];
 
   return (

@@ -9,9 +9,12 @@ import {
 } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { signOut } from "../../api/authApi";
+import { useDataset } from "../../context/DatasetContext";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const { datasetPredictions } = useDataset();
+  const isDatasetUploaded = datasetPredictions && datasetPredictions.length > 0;
 
   const handleLogout = async () => {
     try {
@@ -73,22 +76,32 @@ const Sidebar = () => {
 
       <div className="flex-1 px-4 py-6">
 
-        {menuItems.map((item) => (
-          <NavLink
-            key={item.name}
-            to={item.path}
-            className={({ isActive }) =>
-              `flex items-center gap-3 p-3 rounded-xl mb-3 transition ${
-                isActive
-                  ? "bg-blue-600"
-                  : "hover:bg-slate-800"
-              }`
-            }
-          >
-            {item.icon}
-            {item.name}
-          </NavLink>
-        ))}
+        {menuItems.map((item) => {
+          const isItemDisabled = !isDatasetUploaded && item.path !== "/upload-dataset" && item.path !== "/settings";
+          return (
+            <NavLink
+              key={item.name}
+              to={item.path}
+              onClick={(e) => {
+                if (isItemDisabled) {
+                  e.preventDefault();
+                }
+              }}
+              className={({ isActive }) =>
+                `flex items-center gap-3 p-3 rounded-xl mb-3 transition ${
+                  isItemDisabled
+                    ? "opacity-30 cursor-not-allowed pointer-events-none text-slate-500"
+                    : isActive
+                    ? "bg-blue-600"
+                    : "hover:bg-slate-800"
+                }`
+              }
+            >
+              {item.icon}
+              {item.name}
+            </NavLink>
+          );
+        })}
 
       </div>
 

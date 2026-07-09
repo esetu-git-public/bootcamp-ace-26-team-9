@@ -5,11 +5,14 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import { getAuthUser } from "../../services/authService";
+import { useDataset } from "../../context/DatasetContext";
 
 const Navbar = () => {
   const user = getAuthUser();
   const displayName = user?.name || "Admin";
   const displayRole = user?.role || "HR Manager";
+  const { datasetPredictions } = useDataset();
+  const isDatasetUploaded = datasetPredictions && datasetPredictions.length > 0;
 
   return (
     <div className="h-20 bg-white shadow-sm border-b border-gray-200 flex items-center justify-between px-8">
@@ -29,12 +32,13 @@ const Navbar = () => {
       </div>
 
       {/* Center Search */}
-      <div className="hidden lg:flex items-center bg-gray-100 rounded-xl px-4 py-3 w-96">
+      <div className={`hidden lg:flex items-center bg-gray-100 rounded-xl px-4 py-3 w-96 ${!isDatasetUploaded ? "opacity-50" : ""}`}>
         <FaSearch className="text-gray-400 mr-3" />
         <input
           type="text"
-          placeholder="Search employees..."
-          className="bg-transparent outline-none w-full"
+          placeholder={isDatasetUploaded ? "Search employees..." : "Upload dataset to search..."}
+          disabled={!isDatasetUploaded}
+          className={`bg-transparent outline-none w-full ${!isDatasetUploaded ? "cursor-not-allowed text-gray-400" : ""}`}
         />
       </div>
 
