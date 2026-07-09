@@ -1,5 +1,4 @@
 import axios from "axios";
-import { supabase } from "../services/supabaseClient";
 
 // Shared axios instance pointing at the FastAPI backend
 const api = axios.create({
@@ -10,18 +9,12 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Attach Supabase JWT to every request automatically
+// Attach local storage JWT to every request automatically
 api.interceptors.request.use(
-  async (config) => {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session?.access_token) {
-        config.headers.Authorization = `Bearer ${session.access_token}`;
-      }
-    } catch (error) {
-      console.error("Error retrieving Supabase session:", error);
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },

@@ -5,6 +5,7 @@ import {
   FaFileAlt,
   FaCog,
   FaSignOutAlt,
+  FaUpload,
 } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { signOut } from "../../api/authApi";
@@ -32,6 +33,11 @@ const Sidebar = () => {
       name: "Prediction",
       icon: <FaChartLine />,
       path: "/prediction",
+    },
+    {
+      name: "Upload Dataset",
+      icon: <FaUpload />,
+      path: "/upload-dataset",
     },
     {
       name: "Employees",

@@ -3,8 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import router
 
-from app.database.database import engine
-from app.database.models import Base
+from app.database.database import engine, SessionLocal
+from app.database.models import Base, User
+from app.auth.security import hash_password
 
 # Create FastAPI App
 app = FastAPI(
@@ -36,6 +37,24 @@ def startup_event():
     print(" Server Started Successfully")
     print(" Swagger UI : http://127.0.0.1:8000/docs")
     print("======================================")
+    
+    # Auto-seed default HR user if database is empty of users
+    db = SessionLocal()
+    try:
+        if db.query(User).count() == 0:
+            default_user = User(
+                name="HR Manager",
+                email="admin@company.com",
+                password=hash_password("admin123"),
+                role="HR"
+            )
+            db.add(default_user)
+            db.commit()
+            print("Successfully seeded default HR user (admin@company.com / admin123)")
+    except Exception as e:
+        print(f"Error seeding database: {e}")
+    finally:
+        db.close()
 
 
 @app.on_event("shutdown")

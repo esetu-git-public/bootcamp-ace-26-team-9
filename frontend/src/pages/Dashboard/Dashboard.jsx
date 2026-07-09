@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import MainLayout from "../../layouts/MainLayout";
+import { useDataset } from "../../context/DatasetContext";
 
 import DashboardCards from "../../components/Dashboard/DashboardCards";
 import AttritionChart from "../../components/Dashboard/AttritionChart";
@@ -6,6 +8,12 @@ import DepartmentChart from "../../components/Dashboard/DepartmentChart";
 import RecentPredictions from "../../components/Dashboard/RecentPredictions";
 
 const Dashboard = () => {
+  const { refetchSystemStats } = useDataset();
+
+  useEffect(() => {
+    refetchSystemStats();
+  }, []);
+
   return (
     <MainLayout>
       <div>

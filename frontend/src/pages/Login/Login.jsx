@@ -8,7 +8,7 @@ import {
 
 import InputField from "../../components/Input/InputField";
 import PrimaryButton from "../../components/Button/PrimaryButton";
-import { supabase } from "../../services/supabaseClient";
+import { signIn } from "../../api/authApi";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -39,10 +39,7 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error } = await signIn(email, password);
 
       if (error) {
         setErrors({ general: error.message || "Invalid email or password" });

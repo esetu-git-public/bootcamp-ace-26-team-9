@@ -6,6 +6,7 @@ import Prediction from "../pages/Prediction/Prediction";
 import Employees from "../pages/Employees/Employees";
 import Reports from "../pages/Reports/Reports";
 import Settings from "../pages/Settings/Settings";
+import UploadDataset from "../pages/UploadDataset/UploadDataset";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 const AppRoutes = () => {
@@ -21,6 +22,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/upload-dataset"
+        element={
+          <ProtectedRoute>
+            <UploadDataset />
           </ProtectedRoute>
         }
       />
