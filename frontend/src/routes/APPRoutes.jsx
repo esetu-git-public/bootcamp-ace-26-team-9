@@ -13,6 +13,8 @@ import Reports from "../pages/Reports/Reports";
 import Settings from "../pages/Settings/Settings";
 import Profile from "../pages/Profile/Profile";
 
+import ProtectedRoute from "../components/ProtectedRoute";
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -22,13 +24,55 @@ const AppRoutes = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
 
-      {/* Main Application */}
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/prediction" element={<Prediction />} />
-      <Route path="/employees" element={<Employees />} />
-      <Route path="/reports" element={<Reports />} />
-      <Route path="/settings" element={<Settings />} />
-      <Route path="/profile" element={<Profile />} />
+      {/* Protected Main Pages */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/prediction"
+        element={
+          <ProtectedRoute>
+            <Prediction />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employees"
+        element={
+          <ProtectedRoute>
+            <Employees />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reports"
+        element={
+          <ProtectedRoute>
+            <Reports />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
 
       {/* 404 Page */}
       <Route

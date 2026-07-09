@@ -39,7 +39,6 @@ const Settings = () => {
           <div className="space-y-8">
 
             <div className="flex justify-between items-center">
-
               <div>
                 <h2 className="font-semibold text-lg">
                   Enable Notifications
@@ -56,11 +55,9 @@ const Settings = () => {
                 onChange={() => handleToggle("notifications")}
                 className="w-6 h-6"
               />
-
             </div>
 
             <div className="flex justify-between items-center">
-
               <div>
                 <h2 className="font-semibold text-lg">
                   Dark Mode
@@ -77,11 +74,9 @@ const Settings = () => {
                 onChange={() => handleToggle("darkMode")}
                 className="w-6 h-6"
               />
-
             </div>
 
             <div className="flex justify-between items-center">
-
               <div>
                 <h2 className="font-semibold text-lg">
                   Email Alerts
@@ -98,11 +93,9 @@ const Settings = () => {
                 onChange={() => handleToggle("emailAlerts")}
                 className="w-6 h-6"
               />
-
             </div>
 
             <div className="flex justify-between items-center">
-
               <div>
                 <h2 className="font-semibold text-lg">
                   Auto Logout
@@ -119,18 +112,15 @@ const Settings = () => {
                 onChange={() => handleToggle("autoLogout")}
                 className="w-6 h-6"
               />
-
             </div>
 
             <div className="pt-6">
-
               <button
                 onClick={handleSave}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl"
               >
                 Save Settings
               </button>
-
             </div>
 
           </div>

@@ -6,9 +6,22 @@ import {
   FaCog,
   FaSignOutAlt,
 } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { signOut } from "../../api/authApi";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    } finally {
+      navigate("/");
+    }
+  };
+
   const menuItems = [
     {
       name: "Dashboard",
@@ -75,7 +88,10 @@ const Sidebar = () => {
 
       <div className="p-4 border-t border-slate-700">
 
-        <button className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-600 transition">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-red-600 transition"
+        >
 
           <FaSignOutAlt />
 

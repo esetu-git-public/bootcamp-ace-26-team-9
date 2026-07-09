@@ -10,11 +10,9 @@ const Reports = () => {
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
-
         <div className="flex justify-between items-center mb-8">
 
           <div>
-
             <h1 className="text-3xl font-bold text-gray-800">
               Reports & Analytics
             </h1>
@@ -22,11 +20,9 @@ const Reports = () => {
             <p className="text-gray-500 mt-2">
               View employee reports and export analytics.
             </p>
-
           </div>
 
           <div className="flex gap-4">
-
             <button
               onClick={() => alert("PDF Export Coming Soon")}
               className="bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-xl flex items-center gap-2"
@@ -42,7 +38,6 @@ const Reports = () => {
               <FaFileExcel />
               Export Excel
             </button>
-
           </div>
 
         </div>
@@ -50,9 +45,7 @@ const Reports = () => {
         <ReportCards />
 
         <div className="mt-8">
-
           <DepartmentChart />
-
         </div>
 
         <RecentReports />

@@ -10,11 +10,9 @@ const Employees = () => {
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
-
         <div className="flex justify-between items-center mb-8">
 
           <div>
-
             <h1 className="text-3xl font-bold text-gray-800">
               Employees
             </h1>
@@ -22,7 +20,6 @@ const Employees = () => {
             <p className="text-gray-500 mt-2">
               Manage all employees in one place.
             </p>
-
           </div>
 
           <button
@@ -36,11 +33,9 @@ const Employees = () => {
 
         <EmployeeTable />
 
-        {/* Modal */}
-
+        {/* Add Employee Modal */}
         {showModal && (
-
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
 
             <div className="bg-white rounded-2xl p-8 w-full max-w-lg">
 
@@ -80,7 +75,7 @@ const Employees = () => {
 
                 <button
                   onClick={() => setShowModal(false)}
-                  className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-lg"
+                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg"
                 >
                   Cancel
                 </button>
@@ -100,7 +95,6 @@ const Employees = () => {
             </div>
 
           </div>
-
         )}
 
       </div>
