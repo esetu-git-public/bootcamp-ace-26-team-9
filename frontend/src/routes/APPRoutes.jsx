@@ -1,22 +1,29 @@
 import { Routes, Route } from "react-router-dom";
 
+// Authentication Pages
 import Login from "../pages/Login/Login";
+import Register from "../pages/Register/Register";
+import ForgotPassword from "../pages/ForgotPassword/ForgotPassword";
+
+// Main Pages
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Prediction from "../pages/Prediction/Prediction";
 import Employees from "../pages/Employees/Employees";
 import Reports from "../pages/Reports/Reports";
 import Settings from "../pages/Settings/Settings";
 import UploadDataset from "../pages/UploadDataset/UploadDataset";
+import Profile from "../pages/Profile/Profile";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 const AppRoutes = () => {
   return (
     <Routes>
-
-      {/* Public */}
+      {/* Authentication */}
       <Route path="/" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
-      {/* Protected */}
+      {/* Protected Main Pages */}
       <Route
         path="/dashboard"
         element={
@@ -25,7 +32,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/upload-dataset"
         element={
@@ -34,7 +40,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/prediction"
         element={
@@ -43,7 +48,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/employees"
         element={
@@ -52,7 +56,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/reports"
         element={
@@ -61,7 +64,6 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/settings"
         element={
@@ -70,7 +72,24 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
 
+      {/* 404 Page */}
+      <Route
+        path="*"
+        element={
+          <div className="flex items-center justify-center h-screen text-3xl font-bold">
+            404 | Page Not Found
+          </div>
+        }
+      />
     </Routes>
   );
 };

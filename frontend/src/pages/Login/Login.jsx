@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FaUserTie,
   FaEye,
@@ -22,11 +22,14 @@ const Login = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     let newErrors = {};
 
     if (!email.trim()) {
       newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Please enter a valid email";
     }
 
     if (!password.trim()) {
@@ -60,7 +63,6 @@ const Login = () => {
       <div className="grid md:grid-cols-2 bg-white rounded-3xl shadow-2xl overflow-hidden max-w-6xl w-full">
 
         {/* LEFT PANEL */}
-
         <div className="hidden md:flex flex-col justify-center items-center bg-gradient-to-br from-blue-700 to-indigo-900 text-white p-12">
 
           <FaUserTie size={90} />
@@ -107,7 +109,6 @@ const Login = () => {
         </div>
 
         {/* RIGHT PANEL */}
-
         <div className="p-12">
 
           <div className="mb-8">
@@ -133,84 +134,101 @@ const Login = () => {
             </p>
           )}
 
-          <InputField
-            label="Email"
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <form onSubmit={handleLogin} className="space-y-6">
 
-          {errors.email && (
-            <p className="text-red-500 text-sm -mt-3 mb-4">
-              {errors.email}
-            </p>
-          )}
+            <InputField
+              label="Email"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
-          <div className="mb-5">
-
-            <label className="block font-medium mb-2">
-              Password
-            </label>
-
-            <div className="relative">
-
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border rounded-xl px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-600"
-              />
-
-              <button
-                type="button"
-                className="absolute right-4 top-4 text-gray-500"
-                onClick={() =>
-                  setShowPassword(!showPassword)
-                }
-              >
-                {showPassword ? (
-                  <FaEyeSlash />
-                ) : (
-                  <FaEye />
-                )}
-              </button>
-
-            </div>
-
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-2">
-                {errors.password}
+            {errors.email && (
+              <p className="text-red-500 text-sm -mt-3 mb-4">
+                {errors.email}
               </p>
             )}
 
-          </div>
+            <div className="mb-5">
 
-          <div className="flex justify-between items-center mb-8">
+              <label className="block font-medium mb-2 text-gray-700">
+                Password
+              </label>
 
-            <label className="flex items-center gap-2 text-sm">
+              <div className="relative">
 
-              <input
-                type="checkbox"
-                className="accent-blue-600"
-              />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full border rounded-xl px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
 
-              Remember Me
+                <button
+                  type="button"
+                  className="absolute right-4 top-4 text-gray-500"
+                  onClick={() =>
+                    setShowPassword(!showPassword)
+                  }
+                >
+                  {showPassword ? (
+                    <FaEyeSlash />
+                  ) : (
+                    <FaEye />
+                  )}
+                </button>
 
-            </label>
+              </div>
 
-            <button className="text-blue-600 hover:text-blue-800 font-medium">
-              Forgot Password?
-            </button>
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-2">
+                  {errors.password}
+                </p>
+              )}
 
-          </div>
+            </div>
 
-          <PrimaryButton
-            title="Login"
-            loading={loading}
-            onClick={handleLogin}
-          />
+            <div className="flex justify-between items-center mb-8">
+
+              <label className="flex items-center gap-2 text-sm text-gray-600">
+
+                <input
+                  type="checkbox"
+                  className="accent-blue-600"
+                />
+
+                Remember Me
+
+              </label>
+
+              <Link
+                to="/forgot-password"
+                className="text-blue-600 hover:text-blue-800 font-medium"
+              >
+                Forgot Password?
+              </Link>
+
+            </div>
+
+            <PrimaryButton
+              title="Login"
+              loading={loading}
+              type="submit"
+            />
+
+          </form>
+
+          <p className="text-center mt-8 text-gray-600">
+            New User?
+            <Link
+              to="/register"
+              className="text-blue-600 font-semibold ml-2 hover:underline"
+            >
+              Create Account
+            </Link>
+          </p>
 
           <div className="text-center mt-10">
 
