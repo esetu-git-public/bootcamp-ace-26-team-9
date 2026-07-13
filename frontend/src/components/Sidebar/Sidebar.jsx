@@ -6,6 +6,8 @@ import {
   FaCog,
   FaSignOutAlt,
   FaUpload,
+  FaChartBar,
+  FaBalanceScale,
 } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { signOut } from "../../api/authApi";
@@ -43,6 +45,16 @@ const Sidebar = () => {
       path: "/upload-dataset",
     },
     {
+      name: "Analytics",
+      icon: <FaChartBar />,
+      path: "/analytics",
+    },
+    {
+      name: "Compare Employees",
+      icon: <FaBalanceScale />,
+      path: "/compare",
+    },
+    {
       name: "Employees",
       icon: <FaUsers />,
       path: "/employees",
@@ -58,6 +70,7 @@ const Sidebar = () => {
       path: "/settings",
     },
   ];
+
 
   return (
     <div className="w-64 min-h-screen bg-slate-900 text-white flex flex-col">

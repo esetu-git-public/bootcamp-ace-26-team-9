@@ -30,6 +30,24 @@ app.add_middleware(
 app.include_router(router)
 
 
+@app.get("/health", tags=["Health"])
+def health_check():
+    import datetime
+    from app.services.prediction_service import PredictionService
+    model_loaded = False
+    try:
+        PredictionService.load_model()
+        model_loaded = True
+    except Exception:
+        pass
+    return {
+        "status": "healthy",
+        "model_loaded": model_loaded,
+        "timestamp": datetime.datetime.utcnow().isoformat() + "Z"
+    }
+
+
+
 @app.on_event("startup")
 def startup_event():
     print("======================================")

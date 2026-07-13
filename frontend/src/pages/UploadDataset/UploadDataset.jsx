@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import MainLayout from "../../layouts/MainLayout";
 import { useDataset } from "../../context/DatasetContext";
 import apiClient from "../../api/apiClient";
+import toast from "react-hot-toast";
 import {
   FaCloudUploadAlt,
   FaFileCsv,
@@ -10,7 +11,9 @@ import {
   FaSearch,
   FaCheckCircle,
   FaExclamationCircle,
+  FaExclamationTriangle,
 } from "react-icons/fa";
+
 import {
   BarChart,
   Bar,
@@ -39,7 +42,90 @@ const UploadDataset = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [validationReport, setValidationReport] = useState(null);
   const fileInputRef = useRef(null);
+
+  const validateCSV = (fileToValidate) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target.result;
+      const lines = text.split("\n").map(line => line.trim()).filter(line => line.length > 0);
+      if (lines.length < 2) {
+        setValidationReport({
+          isValid: false,
+          errors: ["CSV file is empty or missing data rows."],
+          warnings: [],
+          rowCount: 0
+        });
+        return;
+      }
+      
+      const headers = lines[0].split(",").map(h => h.trim().replace(/^["']|["']$/g, ""));
+      const requiredColumns = [
+        "Age", "Gender", "Marital_Status", "Department", "Job_Role", "Job_Level",
+        "Monthly_Income", "Hourly_Rate", "Years_at_Company", "Years_in_Current_Role",
+        "Years_Since_Last_Promotion", "Work_Life_Balance", "Job_Satisfaction",
+        "Performance_Rating", "Training_Hours_Last_Year", "Overtime", "Project_Count",
+        "Average_Hours_Worked_Per_Week", "Absenteeism", "Work_Environment_Satisfaction",
+        "Relationship_with_Manager", "Job_Involvement", "Distance_From_Home",
+        "Number_of_Companies_Worked"
+      ];
+      
+      const missingColumns = [];
+      requiredColumns.forEach(col => {
+        const match = headers.some(h => 
+          h.toLowerCase() === col.toLowerCase() || 
+          h.toLowerCase().replace(/_/g, "") === col.toLowerCase().replace(/_/g, "")
+        );
+        if (!match) {
+          missingColumns.push(col);
+        }
+      });
+      
+      const errorsList = [];
+      const warningsList = [];
+      if (missingColumns.length > 0) {
+        errorsList.push(`Missing required features: ${missingColumns.join(", ")}`);
+      }
+      
+      let duplicateCount = 0;
+      let missingValueCount = 0;
+      const seenRows = new Set();
+      
+      for (let i = 1; i < lines.length; i++) {
+        const row = lines[i];
+        if (seenRows.has(row)) {
+          duplicateCount++;
+        } else {
+          seenRows.add(row);
+        }
+        
+        const cells = row.split(",");
+        cells.forEach(cell => {
+          const val = cell.trim();
+          if (val === "" || val.toLowerCase() === "null" || val.toLowerCase() === "na") {
+            missingValueCount++;
+          }
+        });
+      }
+      
+      if (duplicateCount > 0) {
+        warningsList.push(`Found ${duplicateCount} duplicate records.`);
+      }
+      if (missingValueCount > 0) {
+        warningsList.push(`Found ${missingValueCount} missing or blank cells.`);
+      }
+      
+      setValidationReport({
+        isValid: errorsList.length === 0,
+        errors: errorsList,
+        warnings: warningsList,
+        rowCount: lines.length - 1,
+        columnCount: headers.length
+      });
+    };
+    reader.readAsText(fileToValidate);
+  };
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -60,8 +146,10 @@ const UploadDataset = () => {
       if (droppedFile.name.endsWith(".csv")) {
         setFile(droppedFile);
         setError(null);
+        validateCSV(droppedFile);
       } else {
         setError("Only CSV files are supported.");
+        setValidationReport(null);
       }
     }
   };
@@ -72,15 +160,25 @@ const UploadDataset = () => {
       if (selectedFile.name.endsWith(".csv")) {
         setFile(selectedFile);
         setError(null);
+        validateCSV(selectedFile);
       } else {
         setError("Only CSV files are supported.");
+        setValidationReport(null);
       }
     }
   };
 
+
   const handleUpload = async () => {
     if (!file) {
       setError("Please select a CSV file first.");
+      toast.error("Please select a CSV file first.");
+      return;
+    }
+
+    if (validationReport && !validationReport.isValid) {
+      setError("Cannot upload. CSV validation failed.");
+      toast.error("Please fix CSV validation errors before uploading.");
       return;
     }
 
@@ -99,18 +197,21 @@ const UploadDataset = () => {
 
       if (response.data && response.data.predictions) {
         setPredictions(response.data.predictions);
+        toast.success("Dataset uploaded and predictions completed!");
       } else {
         setError("Invalid response format from the server.");
+        toast.error("Invalid response format from the server.");
       }
     } catch (err) {
       console.error(err);
-      setError(
-        err.response?.data?.detail || "An error occurred while uploading and analyzing the dataset."
-      );
+      const errMsg = err.response?.data?.detail || "An error occurred while uploading and analyzing the dataset.";
+      setError(errMsg);
+      toast.error(errMsg);
     } finally {
       setLoading(false);
     }
   };
+
 
   const handleDownloadCSV = () => {
     if (predictions.length === 0) return;
@@ -264,15 +365,57 @@ const UploadDataset = () => {
               </div>
             )}
 
+            {/* CSV Validation Report */}
+            {file && validationReport && (
+              <div className="mt-6 space-y-4">
+                {validationReport.isValid ? (
+                  <div className="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-xl">
+                    <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
+                      <FaCheckCircle className="text-lg" />
+                      CSV Schema Validation Passed
+                    </div>
+                    <p className="text-xs text-emerald-600 mt-1">
+                      Ready to analyze {validationReport.rowCount} records across {validationReport.columnCount} columns.
+                    </p>
+                    {validationReport.warnings.length > 0 && (
+                      <div className="mt-3 space-y-1">
+                        <p className="text-xs font-semibold text-amber-700">Warnings / Information:</p>
+                        {validationReport.warnings.map((w, idx) => (
+                          <p key={idx} className="text-xs text-amber-600 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 bg-amber-500 rounded-full shrink-0" />
+                            {w}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl">
+                    <div className="flex items-center gap-2 text-red-800 font-bold text-sm">
+                      <FaExclamationCircle className="text-lg" />
+                      CSV Schema Validation Failed
+                    </div>
+                    <div className="mt-2 space-y-1">
+                      {validationReport.errors.map((errText, idx) => (
+                        <p key={idx} className="text-xs text-red-600 font-medium">
+                          • {errText}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="mt-8 flex justify-end">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   handleUpload();
                 }}
-                disabled={loading || !file}
+                disabled={loading || !file || (validationReport && !validationReport.isValid)}
                 className={`w-full py-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition shadow-md ${
-                  !file
+                  !file || (validationReport && !validationReport.isValid)
                     ? "bg-gray-100 text-gray-400 cursor-not-allowed shadow-none"
                     : "bg-blue-600 hover:bg-blue-700 text-white transform active:scale-[0.98]"
                 }`}
@@ -287,6 +430,7 @@ const UploadDataset = () => {
                 )}
               </button>
             </div>
+
           </div>
         )}
 

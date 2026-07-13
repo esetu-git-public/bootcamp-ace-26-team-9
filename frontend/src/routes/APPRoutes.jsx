@@ -13,6 +13,8 @@ import Reports from "../pages/Reports/Reports";
 import Settings from "../pages/Settings/Settings";
 import UploadDataset from "../pages/UploadDataset/UploadDataset";
 import Profile from "../pages/Profile/Profile";
+import Analytics from "../pages/Analytics/Analytics";
+import Compare from "../pages/Compare/Compare";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 const AppRoutes = () => {
@@ -49,6 +51,22 @@ const AppRoutes = () => {
         }
       />
       <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute>
+            <Analytics />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/compare"
+        element={
+          <ProtectedRoute>
+            <Compare />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/employees"
         element={
           <ProtectedRoute>
@@ -80,6 +98,7 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+
 
       {/* 404 Page */}
       <Route
