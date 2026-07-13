@@ -1,9 +1,13 @@
+import React from "react";
 import { FaExclamationCircle, FaShieldAlt, FaLightbulb, FaUser, FaInfoCircle } from "react-icons/fa";
+import WhatIfSimulator from "./WhatIfSimulator";
 
-const PredictionResult = ({ result }) => {
+const PredictionResult = ({ result, baseEmployee }) => {
+  if (!result) return null;
+
   const isHighRisk = result.risk_level === "High";
   const isMediumRisk = result.risk_level === "Medium";
-  
+
   // Badge styling
   let badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
   let textColor = "text-emerald-600";
@@ -24,7 +28,7 @@ const PredictionResult = ({ result }) => {
   const strokeDashoffset = circumference - ((result.risk_percentage || result.probability || 0) / 100) * circumference;
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 animate-fade-in">
+    <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 animate-fade-in mt-8">
       <div className="flex items-center gap-3 border-b border-slate-100 pb-6 mb-8">
         <div className="bg-blue-50 text-blue-600 p-3 rounded-2xl">
           <FaInfoCircle className="text-2xl" />
@@ -41,7 +45,7 @@ const PredictionResult = ({ result }) => {
         {/* Risk meter panel */}
         <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 flex flex-col items-center justify-center text-center">
           <h3 className="text-slate-600 font-semibold text-sm mb-4">Attrition Risk Score</h3>
-          
+
           <div className="relative w-36 h-36 flex items-center justify-center">
             <svg className="w-full h-full transform -rotate-90">
               {/* Background circle */}
@@ -74,7 +78,7 @@ const PredictionResult = ({ result }) => {
           <div className={`mt-6 px-4 py-1.5 rounded-full border text-sm font-semibold capitalize ${badgeColor}`}>
             {result.risk_level} Risk Level
           </div>
-          
+
           <div className="mt-4 text-xs text-slate-400 font-medium">
             Calculated via AI model: {result.model_name || "Gradient Boosting"}
           </div>
@@ -87,15 +91,15 @@ const PredictionResult = ({ result }) => {
               <FaExclamationCircle className="text-red-500" />
               Explainable AI: Key Attrition Drivers
             </h3>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {(result.factors || []).map((factor, index) => (
+              {(result.factors || result.top_factors || []).map((factor, index) => (
                 <div key={index} className="flex items-start gap-3 bg-red-50/40 p-4 rounded-xl border border-red-100/50">
                   <div className="w-2 h-2 bg-red-500 rounded-full mt-1.5 shrink-0" />
                   <p className="text-sm font-medium text-slate-700">{factor}</p>
                 </div>
               ))}
-              {(!result.factors || result.factors.length === 0) && (
+              {(!result.factors && !result.top_factors) && (
                 <div className="p-4 text-sm text-slate-500 bg-slate-50 rounded-xl w-full">
                   No critical negative drivers found. Employee is in safe thresholds.
                 </div>
@@ -108,7 +112,7 @@ const PredictionResult = ({ result }) => {
               <FaLightbulb className="text-amber-500" />
               AI Recommendations & Intervention Plan
             </h3>
-            
+
             <div className="space-y-3">
               {(result.recommendations || []).map((rec, index) => (
                 <div key={index} className="flex items-start gap-3 bg-blue-50/30 p-4 rounded-xl border border-blue-100/40">
@@ -125,8 +129,13 @@ const PredictionResult = ({ result }) => {
           </div>
         </div>
       </div>
+
+      {/* Interactive What-If Sandbox */}
+      {baseEmployee && (
+        <WhatIfSimulator baseEmployee={baseEmployee} initialPrediction={result} />
+      )}
     </div>
   );
 };
 
-export default PredictionResult;
+export default PredictionResult;

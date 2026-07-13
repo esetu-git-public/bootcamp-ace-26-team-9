@@ -536,10 +536,10 @@ const PredictionForm = () => {
       </form>
 
       {result && (
-        <PredictionResult result={result} />
+        <PredictionResult result={result} baseEmployee={formData} />
       )}
     </div>
   );
 };
 
-export default PredictionForm;
+export default PredictionForm;

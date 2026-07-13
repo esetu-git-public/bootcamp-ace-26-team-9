@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUserTie } from "react-icons/fa";
-import { supabase } from "../../services/supabaseClient";
+import { supabase, isSupabaseConfigured } from "../../services/supabaseClient";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -57,6 +57,13 @@ const Register = () => {
 
     setLoading(true);
     try {
+      if (!isSupabaseConfigured()) {
+        localStorage.setItem("local_auth_session", JSON.stringify({ user: { email: form.email, name: form.name, role: "HR Manager" } }));
+        alert("Registration Successful!");
+        navigate("/dashboard");
+        return;
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email: form.email,
         password: form.password,
