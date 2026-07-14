@@ -48,7 +48,8 @@ def predict(
         model_name=result.get(
             "model_name",
             "Random Forest"
-        )
+        ),
+        user_id=current_user.get("sub")
     )
 
     return result

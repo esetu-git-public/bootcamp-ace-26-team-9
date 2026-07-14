@@ -23,7 +23,7 @@ def get_predictions(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    return CRUDService.get_predictions(db)
+    return CRUDService.get_predictions(db, user_id=current_user.get("sub"))
 
 
 @router.get("/predictions/{prediction_id}", tags=["Prediction History"])
@@ -35,7 +35,8 @@ def get_prediction(
 
     prediction = CRUDService.get_prediction_by_id(
         db,
-        prediction_id
+        prediction_id,
+        user_id=current_user.get("sub")
     )
 
     if prediction is None:
@@ -57,7 +58,8 @@ def delete_prediction(
 
     prediction = CRUDService.delete_prediction(
         db,
-        prediction_id
+        prediction_id,
+        user_id=current_user.get("sub")
     )
 
     if prediction is None:

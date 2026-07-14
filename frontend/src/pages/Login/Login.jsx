@@ -8,10 +8,11 @@ import {
 
 import InputField from "../../components/Input/InputField";
 import PrimaryButton from "../../components/Button/PrimaryButton";
-import { signIn } from "../../api/authApi";
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +43,7 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const { error } = await signIn(email, password);
+      const { error } = await login(email, password);
 
       if (error) {
         setErrors({ general: error.message || "Invalid email or password" });

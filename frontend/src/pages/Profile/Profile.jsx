@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MainLayout from "../../layouts/MainLayout";
 import { FaUserCircle, FaEnvelope, FaPhone, FaBuilding, FaUserTie } from "react-icons/fa";
+import { getAuthUser } from "../../services/authService";
 
 const Profile = () => {
   const [showModal, setShowModal] = useState(false);
@@ -13,6 +14,21 @@ const Profile = () => {
     department: "Human Resources",
     role: "HR Manager",
   });
+
+  useEffect(() => {
+    const user = getAuthUser();
+    if (user) {
+      const updatedProfile = {
+        ...profile,
+        name: user.name || "Admin",
+        email: user.email || "admin@company.com",
+        employeeId: "EMP" + (user.id ? user.id.slice(0, 4).toUpperCase() : "001"),
+        role: user.role || "HR Manager"
+      };
+      setProfile(updatedProfile);
+      setFormData(updatedProfile);
+    }
+  }, []);
 
   const [formData, setFormData] = useState(profile);
 
