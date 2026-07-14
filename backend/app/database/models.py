@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, JSON
 from datetime import datetime
 
 from app.database.database import Base
@@ -145,3 +145,35 @@ class Employee(Base):
         DateTime,
         default=datetime.utcnow
     )
+
+
+# ==========================
+# User Uploaded Dataset Table
+# ==========================
+
+class UserDataset(Base):
+
+    __tablename__ = "user_datasets"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    user_id = Column(String, index=True, nullable=False)
+
+    filename = Column(String, nullable=False)
+
+    filepath = Column(String, nullable=False)
+
+    total_records = Column(Integer, nullable=False, default=0)
+
+    high_risk_count = Column(Integer, nullable=False, default=0)
+
+    medium_risk_count = Column(Integer, nullable=False, default=0)
+
+    low_risk_count = Column(Integer, nullable=False, default=0)
+
+    avg_risk_percentage = Column(Float, nullable=False, default=0.0)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

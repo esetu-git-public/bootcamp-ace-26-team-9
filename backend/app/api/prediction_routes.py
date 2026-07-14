@@ -21,6 +21,7 @@ from app.services.batch_prediction_service import BatchPredictionService
 from app.services.metrics_service import MetricsService
 
 from app.auth.oauth2 import get_current_user
+from app.services.dataset_service import DatasetService
 
 router = APIRouter()
 
@@ -62,6 +63,7 @@ def predict(
 @router.post("/predict/csv", tags=["Batch Prediction"])
 def batch_prediction(
     file: UploadFile = File(...),
+    db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
 
@@ -79,7 +81,29 @@ def batch_prediction(
         str(file_path)
     )
 
-    return result
+    # Save to user_datasets if user is logged in
+    user_id = current_user.get("sub")
+    dataset_id = None
+    if user_id:
+        try:
+            saved_record = DatasetService.save_user_dataset(
+                db=db,
+                user_id=user_id,
+                filename=file.filename,
+                predictions=result.get("predictions", [])
+            )
+            dataset_id = saved_record.id
+        except Exception as e:
+            print("DEBUG: Failed to save uploaded dataset to database:", e)
+
+    return {
+        "status": result.get("status", "Success"),
+        "total_records": result.get("total_records", 0),
+        "output_file": result.get("output_file"),
+        "predictions": result.get("predictions", []),
+        "dataset_id": dataset_id
+    }
+
 
 
 # ==========================================================

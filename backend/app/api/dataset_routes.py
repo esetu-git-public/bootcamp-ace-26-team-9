@@ -1,8 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 
+from app.database.database import get_db
+from app.auth.oauth2 import get_current_user
 from app.services.data_service import DataService
 from app.services.preprocessing_service import PreprocessingService
 from app.services.feature_engineering_service import FeatureEngineeringService
+from app.services.dataset_service import DatasetService
 
 router = APIRouter()
 
@@ -79,3 +83,83 @@ def get_features():
         "target_column": "Attrition",
         "features": list(X.columns)
     }
+
+
+# ==========================================================
+# Private User Datasets APIs
+# ==========================================================
+
+@router.get("/datasets", tags=["User Datasets"])
+def list_datasets(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Retrieve all dataset reports uploaded by the current authenticated user.
+    """
+    user_id = current_user.get("sub")
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User identity not found in token"
+        )
+    return DatasetService.get_user_datasets(db=db, user_id=user_id)
+
+
+@router.get("/datasets/{dataset_id}", tags=["User Datasets"])
+def get_dataset(
+    dataset_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Retrieve the full predictions list for a specific dataset report belonging to the current user.
+    """
+    user_id = current_user.get("sub")
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User identity not found in token"
+        )
+    
+    dataset = DatasetService.get_user_dataset_by_id(db=db, dataset_id=dataset_id, user_id=user_id)
+    if not dataset:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Dataset report not found or access denied"
+        )
+        
+    predictions = DatasetService.load_predictions_from_file(dataset.filepath)
+        
+    return {
+        "id": dataset.id,
+        "filename": dataset.filename,
+        "created_at": dataset.created_at,
+        "predictions": predictions
+    }
+
+
+@router.delete("/datasets/{dataset_id}", tags=["User Datasets"])
+def delete_dataset(
+    dataset_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Delete a specific dataset report belonging to the current user.
+    """
+    user_id = current_user.get("sub")
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User identity not found in token"
+        )
+        
+    success = DatasetService.delete_user_dataset(db=db, dataset_id=dataset_id, user_id=user_id)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Dataset report not found or access denied"
+        )
+        
+    return {"status": "Success", "message": "Dataset report deleted successfully"}

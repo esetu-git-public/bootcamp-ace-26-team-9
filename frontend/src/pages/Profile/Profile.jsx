@@ -171,7 +171,7 @@ const Profile = () => {
 
         {/* Statistics */}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        {/*<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
 
           <div className="bg-white shadow rounded-2xl p-6">
 
@@ -209,7 +209,7 @@ const Profile = () => {
 
           </div>
 
-        </div>
+        </div>*/}
 
         {/* Edit Modal */}
 
