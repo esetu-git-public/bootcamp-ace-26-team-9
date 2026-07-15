@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import apiClient from "../api/apiClient";
+import { useAuth } from "./AuthContext";
 
 const DatasetContext = createContext();
 
@@ -9,8 +10,13 @@ export const DatasetProvider = ({ children }) => {
   const [systemStats, setSystemStats] = useState(null);
   const [loadingSystem, setLoadingSystem] = useState(true);
   const [errorSystem, setErrorSystem] = useState(null);
+  const { session } = useAuth() || {};
 
   const fetchSystemStats = async () => {
+    if (!session) {
+      setLoadingSystem(false);
+      return;
+    }
     setLoadingSystem(true);
     setErrorSystem(null);
     try {
@@ -25,8 +31,13 @@ export const DatasetProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchSystemStats();
-  }, []);
+    if (session) {
+      fetchSystemStats();
+    } else {
+      setSystemStats(null);
+      setLoadingSystem(false);
+    }
+  }, [session]);
 
   return (
     <DatasetContext.Provider

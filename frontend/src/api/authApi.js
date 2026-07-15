@@ -1,29 +1,63 @@
-import api from "./axiosInstance";
+import { supabase } from "../services/supabaseClient";
 
-// Sign in with local JWT authentication mapped to signIn
+// Sign in with Supabase
 export const signIn = async (email, password) => {
   try {
-    const response = await api.post("/login", { email, password });
-    localStorage.setItem("token", response.data.access_token);
-    localStorage.setItem("user", JSON.stringify(response.data.user));
-    return { data: response.data, error: null };
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) throw error;
+
+    // Save token and user info
+    localStorage.setItem("token", data.session.access_token);
+    localStorage.setItem("user", JSON.stringify({
+      id: data.user.id,
+      name: data.user.user_metadata?.display_name || data.user.email,
+      email: data.user.email,
+      role: "HR Manager", // default role
+    }));
+    return { data, error: null };
   } catch (error) {
     return {
       data: null,
-      error: { message: error.response?.data?.detail || "Invalid email or password" },
+      error: { message: error.message || "Invalid email or password" },
     };
   }
 };
 
 // Sign out and clear local session
 export const signOut = async () => {
+  try {
+    await supabase.auth.signOut();
+  } catch (error) {
+    console.error("Supabase signOut error:", error);
+  }
   localStorage.removeItem("token");
   localStorage.removeItem("user");
   return { error: null };
 };
 
-// Get local active session
+// Get active session
 export const getSession = async () => {
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    if (session) {
+      localStorage.setItem("token", session.access_token);
+      localStorage.setItem("user", JSON.stringify({
+        id: session.user.id,
+        name: session.user.user_metadata?.display_name || session.user.email,
+        email: session.user.email,
+        role: "HR Manager",
+      }));
+      return { session, error: null };
+    }
+  } catch (error) {
+    console.error("Supabase getSession error:", error);
+  }
+
+  // Fallback to local storage
   const token = localStorage.getItem("token");
   const user = localStorage.getItem("user");
   if (token && user) {
@@ -32,11 +66,23 @@ export const getSession = async () => {
   return { session: null, error: null };
 };
 
-// Mock onAuthStateChange listener
+// onAuthStateChange listener
 export const onAuthStateChange = (callback) => {
-  const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user");
-  const session = token && user ? { access_token: token, user: JSON.parse(user) } : null;
-  callback("SIGNED_IN", session);
-  return { data: { subscription: { unsubscribe: () => {} } } };
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    if (session) {
+      localStorage.setItem("token", session.access_token);
+      localStorage.setItem("user", JSON.stringify({
+        id: session.user.id,
+        name: session.user.user_metadata?.display_name || session.user.email,
+        email: session.user.email,
+        role: "HR Manager",
+      }));
+      callback(event, session);
+    } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      callback(event, null);
+    }
+  });
+  return { data: { subscription } };
 };

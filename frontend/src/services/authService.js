@@ -1,5 +1,22 @@
+import { supabase } from "./supabaseClient";
+
 // Get current active session
 export const getSession = async () => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      localStorage.setItem("token", session.access_token);
+      localStorage.setItem("user", JSON.stringify({
+        id: session.user.id,
+        name: session.user.user_metadata?.display_name || session.user.email,
+        email: session.user.email,
+        role: "HR Manager",
+      }));
+      return { session, error: null };
+    }
+  } catch (e) {
+    console.error("Supabase getSession error:", e);
+  }
   const token = localStorage.getItem("token");
   const user = localStorage.getItem("user");
   if (token && user) {
@@ -10,15 +27,32 @@ export const getSession = async () => {
 
 // Subscribe to auth state changes
 export const onAuthStateChange = (callback) => {
-  const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user");
-  const session = token && user ? { access_token: token, user: JSON.parse(user) } : null;
-  callback("SIGNED_IN", session);
-  return { data: { subscription: { unsubscribe: () => {} } } };
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      localStorage.setItem("token", session.access_token);
+      localStorage.setItem("user", JSON.stringify({
+        id: session.user.id,
+        name: session.user.user_metadata?.display_name || session.user.email,
+        email: session.user.email,
+        role: "HR Manager",
+      }));
+      callback(event, session);
+    } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      callback(event, null);
+    }
+  });
+  return { data: { subscription } };
 };
 
 // Sign out current user
 export const signOut = async () => {
+  try {
+    await supabase.auth.signOut();
+  } catch (e) {
+    console.error("Supabase signOut error:", e);
+  }
   localStorage.removeItem("token");
   localStorage.removeItem("user");
   return { error: null };

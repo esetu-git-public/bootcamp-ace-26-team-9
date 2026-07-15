@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import MainLayout from "../../layouts/MainLayout";
 import { useDataset } from "../../context/DatasetContext";
 import apiClient from "../../api/apiClient";
@@ -44,6 +44,69 @@ const UploadDataset = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [validationReport, setValidationReport] = useState(null);
   const fileInputRef = useRef(null);
+
+  const [previousUploads, setPreviousUploads] = useState([]);
+  const [fetchingPrevious, setFetchingPrevious] = useState(false);
+
+  const fetchPreviousUploads = async () => {
+    setFetchingPrevious(true);
+    try {
+      const response = await apiClient.get("/datasets");
+      setPreviousUploads(response.data);
+    } catch (err) {
+      console.error("Error fetching previous uploads:", err);
+    } finally {
+      setFetchingPrevious(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPreviousUploads();
+  }, []);
+
+  const handleLoadReport = async (datasetId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await apiClient.get(`/datasets/${datasetId}`);
+      if (response.data && response.data.predictions) {
+        setPredictions(response.data.predictions);
+        setFile({ name: response.data.filename });
+        toast.success(`Loaded report: ${response.data.filename}`);
+      } else {
+        toast.error("Failed to load predictions from report.");
+      }
+    } catch (err) {
+      console.error(err);
+      const errMsg = err.response?.data?.detail || "Failed to load report.";
+      setError(errMsg);
+      toast.error(errMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteReport = async (datasetId, filename) => {
+    if (!window.confirm(`Are you sure you want to delete the report "${filename}"?`)) {
+      return;
+    }
+    try {
+      await apiClient.delete(`/datasets/${datasetId}`);
+      toast.success("Report deleted successfully");
+      fetchPreviousUploads();
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.detail || "Failed to delete report.");
+    }
+  };
+
+  const handleReset = () => {
+    setPredictions([]);
+    setFile(null);
+    setValidationReport(null);
+    setError(null);
+    fetchPreviousUploads();
+  };
 
   const validateCSV = (fileToValidate) => {
     const reader = new FileReader();
@@ -198,6 +261,7 @@ const UploadDataset = () => {
       if (response.data && response.data.predictions) {
         setPredictions(response.data.predictions);
         toast.success("Dataset uploaded and predictions completed!");
+        fetchPreviousUploads();
       } else {
         setError("Invalid response format from the server.");
         toast.error("Invalid response format from the server.");
@@ -311,13 +375,21 @@ const UploadDataset = () => {
             </p>
           </div>
           {predictions.length > 0 && (
-            <button
-              onClick={handleDownloadCSV}
-              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl font-medium shadow-md transition-all transform active:scale-95"
-            >
-              <FaDownload />
-              Download Predicted CSV
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={handleReset}
+                className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-3 rounded-xl font-medium shadow-sm transition-all transform active:scale-95 text-sm"
+              >
+                ← Analyze Another
+              </button>
+              <button
+                onClick={handleDownloadCSV}
+                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl font-medium shadow-md transition-all transform active:scale-95 text-sm"
+              >
+                <FaDownload />
+                Download Predicted CSV
+              </button>
+            </div>
           )}
         </div>
 
@@ -431,6 +503,76 @@ const UploadDataset = () => {
               </button>
             </div>
 
+          </div>
+        )}
+
+        {/* Saved Reports List */}
+        {predictions.length === 0 && (
+          <div className="mt-12 max-w-4xl mx-auto">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+              📂 Saved Batch Reports
+            </h2>
+            
+            {fetchingPrevious ? (
+              <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center shadow-md">
+                <FaSpinner className="animate-spin text-3xl text-blue-600 mx-auto mb-3" />
+                <p className="text-gray-500 font-medium">Fetching saved reports...</p>
+              </div>
+            ) : previousUploads.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center shadow-md">
+                <p className="text-gray-500 font-medium">No saved reports found.</p>
+                <p className="text-gray-400 text-sm mt-1">Upload a CSV dataset above to save and view reports here.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {previousUploads.map((report) => (
+                  <div key={report.id} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                      <div className="flex justify-between items-start gap-2">
+                        <h3 className="font-bold text-gray-900 truncate max-w-[250px]" title={report.filename}>
+                          {report.filename}
+                        </h3>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteReport(report.id, report.filename);
+                          }}
+                          className="text-red-500 hover:text-red-700 p-1 rounded-lg hover:bg-red-50 transition"
+                          title="Delete report"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                      <p className="text-gray-400 text-xs mt-1">
+                        Uploaded on {new Date(report.created_at).toLocaleDateString()} at {new Date(report.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      </p>
+                      
+                      <div className="grid grid-cols-3 gap-2 mt-4 text-center">
+                        <div className="bg-slate-50 p-2 rounded-xl">
+                          <p className="text-gray-500 text-[10px] uppercase font-bold tracking-wider">Total</p>
+                          <p className="text-sm font-extrabold text-slate-800">{report.total_records}</p>
+                        </div>
+                        <div className="bg-red-50 p-2 rounded-xl">
+                          <p className="text-red-500 text-[10px] uppercase font-bold tracking-wider">High Risk</p>
+                          <p className="text-sm font-extrabold text-red-600">{report.high_risk_count}</p>
+                        </div>
+                        <div className="bg-emerald-50 p-2 rounded-xl">
+                          <p className="text-emerald-500 text-[10px] uppercase font-bold tracking-wider">Avg Risk</p>
+                          <p className="text-sm font-extrabold text-emerald-600">{report.avg_risk_percentage}%</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={() => handleLoadReport(report.id)}
+                      className="mt-4 w-full py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl font-semibold text-sm transition transform active:scale-[0.98]"
+                    >
+                      Load & Assess Report
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

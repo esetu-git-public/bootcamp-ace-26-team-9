@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime
+from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, JSON
 from datetime import datetime
 
 from database.database import Base
@@ -17,6 +17,8 @@ class PredictionHistory(Base):
     probability = Column(Float, nullable=False)
 
     model_name = Column(String, nullable=False)
+
+    user_id = Column(String, index=True, nullable=True)
 
     created_at = Column(
         DateTime,
@@ -72,7 +74,39 @@ class User(Base):
         default=datetime.utcnow
     )
 
-    # ==========================
+
+# ==========================
+# User Session Table
+# ==========================
+
+class UserSession(Base):
+
+    __tablename__ = "user_sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    user_id = Column(String, index=True, nullable=False)
+
+    session_token = Column(String, unique=True, index=True, nullable=False)
+
+    login_time = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
+    last_activity = Column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
+
+    is_active = Column(
+        Boolean,
+        default=True
+    )
+
+
+# ==========================
 # Employee Table
 # ==========================
 
@@ -155,4 +189,36 @@ class SystemLog(Base):
     created_at = Column(
         DateTime,
         default=datetime.utcnow
-    )
+    )
+
+
+# ==========================
+# User Uploaded Dataset Table
+# ==========================
+
+class UserDataset(Base):
+
+    __tablename__ = "user_datasets"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    user_id = Column(String, index=True, nullable=False)
+
+    filename = Column(String, nullable=False)
+
+    filepath = Column(String, nullable=False)
+
+    total_records = Column(Integer, nullable=False, default=0)
+
+    high_risk_count = Column(Integer, nullable=False, default=0)
+
+    medium_risk_count = Column(Integer, nullable=False, default=0)
+
+    low_risk_count = Column(Integer, nullable=False, default=0)
+
+    avg_risk_percentage = Column(Float, nullable=False, default=0.0)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )

@@ -17,7 +17,7 @@ def dashboard_stats(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    return DashboardService.get_dashboard_stats(db)
+    return DashboardService.get_dashboard_stats(db, user_id=current_user.get("sub"))
 
 
 @router.get("/dashboard/department-chart", tags=["Dashboard"])
@@ -49,4 +49,4 @@ def recent_predictions(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    return DashboardService.recent_predictions(db)
+    return DashboardService.recent_predictions(db, user_id=current_user.get("sub"))

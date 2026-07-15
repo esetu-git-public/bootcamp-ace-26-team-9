@@ -10,7 +10,7 @@ from database.models import (
 class DashboardService:
 
     @staticmethod
-    def get_dashboard_stats(db: Session):
+    def get_dashboard_stats(db: Session, user_id: str = None):
 
         total_employees = db.query(Employee).count()
 
@@ -26,10 +26,10 @@ class DashboardService:
             .count()
         )
 
-        prediction_count = (
-            db.query(PredictionHistory)
-            .count()
-        )
+        query = db.query(PredictionHistory)
+        if user_id:
+            query = query.filter(PredictionHistory.user_id == user_id)
+        prediction_count = query.count()
 
         return {
             "total_employees": total_employees,
@@ -99,11 +99,13 @@ class DashboardService:
         ]
 
     @staticmethod
-    def recent_predictions(db: Session):
+    def recent_predictions(db: Session, user_id: str = None):
 
+        query = db.query(PredictionHistory)
+        if user_id:
+            query = query.filter(PredictionHistory.user_id == user_id)
         return (
-            db.query(PredictionHistory)
-            .order_by(
+            query.order_by(
                 PredictionHistory.created_at.desc()
             )
             .limit(10)
