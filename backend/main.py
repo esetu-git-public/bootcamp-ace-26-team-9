@@ -1,6 +1,9 @@
 import sys
 import os
+# Add backend dir itself so internal imports (api, services, etc.) resolve
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Add repo root so the top-level `ml` package is found
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from dotenv import load_dotenv
 load_dotenv()
