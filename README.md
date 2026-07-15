@@ -1,247 +1,180 @@
 # Employee Attrition Prediction System 🚀
 
-A production-ready Full Stack AI Application designed to help HR departments predict employee turnover, analyze attrition trends, and generate actionable retention strategies using modern Machine Learning and web technologies.
+An enterprise-grade, full-stack **AI-Powered Employee Retention Intelligence Platform** designed to predict workforce attrition risks, explain underlying behavioral drivers with **SHAP/LIME Explainable AI**, simulate retention interventions with an **interactive What-If Sandbox**, and provide actionable HR recommendations.
 
 ---
 
-## 📋 Project Overview
+## 🌟 Premium Retention Intelligence Features
 
-Employee turnover is a critical challenge for organizations worldwide. High attrition leads to productivity loss, hiring costs, and team instability. The **Employee Attrition Prediction System** leverages advanced machine learning algorithms trained on the IBM HR Analytics dataset to assess employee risk levels in real-time. 
-
-With an intuitive HR Dashboard, comprehensive analytics charts, and intelligent retention recommendations, HR managers can proactively identify high-risk employees and intervene before they leave.
-
----
-
-## 🛠️ Tech Stack
-
-### **Frontend**
-- **React.js (v18)** – Component-based modern UI library
-- **Vite** – Ultra-fast development server and production bundler
-- **Tailwind CSS (v3)** – Utility-first CSS framework for a responsive Blue & White HR theme
-- **React Router (v6)** – Client-side routing and protected navigation
-- **Axios** – HTTP client for REST API communication
-- **Recharts** – Interactive, responsive data visualization charts
-- **React Hook Form** – Robust form validation and state management
-- **Lucide React** – Clean, professional HR dashboard icons
-
-### **Backend**
-- **Python Flask** – Lightweight, robust web microframework
-- **Flask REST API** – JSON API endpoints for prediction and analytics
-- **Flask-CORS** – Cross-Origin Resource Sharing enablement
-
-### **Machine Learning**
-- **Scikit-learn** – Core ML training, preprocessing, and model evaluation
-- **XGBoost** – Gradient boosted decision trees for state-of-the-art accuracy
-- **Pandas & NumPy** – Data manipulation, feature engineering, and statistical analysis
-- **Joblib** – Model and preprocessor artifact serialization (`model.pkl`, `scaler.pkl`, `encoder.pkl`)
-- **Matplotlib & Seaborn** – Exploratory Data Analysis (EDA) and evaluation visualizations
+- **Automated ML Model Benchmarking & Selection**: Trains, benchmarks, and automatically promotes the best supervised model among **Logistic Regression, XGBoost, Random Forest, Decision Tree, and Gradient Boosting**.
+- **SHAP/LIME Explainable AI Breakdown**: Provides granular feature attribution showing the exact positive or negative percentage impact (+/- risk contribution) of each behavioral driver.
+- **Employee Risk Score (0–100) & Confidence Gauge**: Delivers intuitive risk scores alongside color-coded risk tiers (`High Risk`, `Medium Risk`, `Low Risk`).
+- **Interactive What-If Retention Simulator**: Lets HR executives experiment with compensation adjustments, overtime schedules, and job satisfaction improvements to compute instantaneous risk reduction deltas (`POST /predict/what-if`).
+- **Personalized HR Retention Action Plan**: Automatically maps behavioral risk factors to targeted retention strategies.
+- **Bulk CSV Upload & Batch Prediction**: Evaluate entire workforce rosters (`POST /predict/csv`) with automated CSV output generation.
+- **Downloadable Executive Reports**: One-click CSV/PDF export of workforce attrition diagnostics (`GET /reports/export/csv`).
+- **Role-Based JWT Security**: Supports Admin, HR, and Manager access tiers with guest development fallback.
+- **Modern Glassmorphism UI**: High-polish dark/light dashboard built with React 18 & Vite.
 
 ---
 
-## 🚀 Installation & Setup
+## 📋 System Architecture & Overview
 
-### **Prerequisites**
-- **Node.js** (v18 or higher) and `npm`
-- **Python** (v3.9 or higher) and `pip`
+Employee turnover creates significant financial and operational burdens for enterprises. The **Employee Attrition Prediction System** combines state-of-the-art predictive ML modeling trained on comprehensive HR analytics datasets with a sleek, responsive HR management interface.
 
-### **1. Clone the Repository**
-```bash
-git clone https://github.com/your-repo/Employee-Attrition-Prediction.git
-cd Employee-Attrition-Prediction
+### ✨ Key Capabilities
+- **Real-Time Attrition Diagnosis**: Evaluates employee risk profiles instantly via FastAPI REST endpoints.
+- **Enriched Risk Intelligence**: Returns not just a binary prediction, but also:
+  - **Probability & Model Confidence Score** (`%`)
+  - **Risk Tier Badge** (`Low`, `Medium`, `High`)
+  - **Top Contributing Risk Factors** (e.g., `OverTime`, `Monthly Income`, `Job Satisfaction`)
+  - **Personalized HR Recommendations** tailored to the employee's specific risk drivers.
+- **Batch CSV Evaluation**: Process entire departments or enterprise rosters via `/predict/csv`.
+- **Comprehensive Audit & History**: Persists predictions, training history, user accounts, and audit logs using SQLAlchemy.
+
+---
+
+## 🛠️ Technology Stack
+
+### **Backend Service (`backend/`)**
+- **FastAPI (v0.110+)** – High-performance asynchronous Python REST API framework with automatic OpenAPI documentation.
+- **SQLAlchemy (v2.0+)** – Robust ORM for persistence across SQLite / PostgreSQL.
+- **Pydantic (v2+)** – Strict schema validation and serialization.
+- **JWT Authentication & Bcrypt** – Stateless secure token-based authentication and salted password hashing.
+
+### **Machine Learning Pipeline (`ml/`)**
+- **Scikit-learn & XGBoost** – Automated training across 5 supervised classification algorithms.
+- **Automated Benchmarking** – Evaluates Accuracy, Precision, Recall, F1-Score, and ROC-AUC, automatically promoting the highest-performing algorithm.
+- **Joblib & JSON Serialization** – Production model artifacts (`model.pkl`, `scaler.pkl`, `model_metadata.json`).
+
+### **Frontend Application (`frontend/`)**
+- **React 18 + Vite** – Fast SPA architecture with hot module replacement.
+- **Tailwind CSS v3** – Clean, accessible HR dashboard styling with responsive layouts.
+- **Lucide Icons & Recharts** – Visual analytics, charts, and diagnostic cards.
+
+---
+
+## 📊 Machine Learning Model Benchmarking
+
+The ML pipeline (`ml/train.py`) trains and compares 5 distinct supervised learning models using stratified splitting and feature engineering:
+
+| Algorithm | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Logistic Regression** | **0.6190** | **0.3846** | **0.6098** | **0.4717** | **0.6763** |
+| **XGBoost** | 0.6463 | 0.3942 | 0.5000 | 0.4409 | 0.6333 |
+| **Random Forest** | 0.7245 | 0.5122 | 0.2561 | 0.3415 | 0.6573 |
+| **Decision Tree** | 0.5782 | 0.3250 | 0.4756 | 0.3861 | 0.5920 |
+| **Gradient Boosting** | 0.6905 | 0.4082 | 0.2439 | 0.3053 | 0.6217 |
+
+> *The best model is automatically serialized along with feature preprocessors to `ml/model.pkl` for immediate API serving.*
+
+---
+
+## 📂 Professional Project Structure
+
+```
+Employee-Attrition-Prediction/
+│
+├── backend/                  # Production FastAPI application
+│   ├── api/                  # REST API routes (prediction, batch, auth)
+│   ├── auth/                 # JWT handler & bcrypt password security
+│   ├── database/             # SQLAlchemy ORM models, session & CRUD
+│   ├── schemas/              # Pydantic request/response schemas
+│   ├── services/             # Prediction inference & batch processing
+│   ├── main.py               # FastAPI entrypoint & middleware setup
+│   └── requirements.txt      # Clean backend dependencies
+│
+├── ml/                       # Machine Learning training & inference engine
+│   ├── preprocessing.py      # Feature engineering & scaling pipelines
+│   ├── train.py              # 5-Model training & benchmarking script
+│   ├── evaluation.py         # Evaluation metrics & visualization charts
+│   ├── predict.py            # Enriched inference & recommendation engine
+│   ├── model.pkl             # Serialized production model artifact
+│   └── scaler.pkl            # Serialized feature scaler artifact
+│
+├── frontend/                 # React 18 + Vite web dashboard
+│   ├── src/
+│   │   ├── pages/            # Dashboard, Prediction Form, Analytics
+│   │   ├── components/       # Reusable UI widgets & layout components
+│   │   └── api/              # Axios API client configured for FastAPI
+│   └── package.json
+│
+├── tests/                    # Production verification & test suite
+│   └── test_production_system.py
+│
+├── dataset/                  # IBM HR Analytics source data
+└── README.md                 # System documentation
 ```
 
-### **2. Setup Backend & ML Environment**
-Create and activate a Python virtual environment (optional but recommended):
+---
+
+## 🚀 Installation & Quick Start
+
+### 1. Environment Setup & ML Training
+Create a virtual environment, install backend packages, and train the production ML pipeline:
+
 ```bash
-# On Windows
+# Activate virtual environment
 python -m venv venv
 .\venv\Scripts\activate
 
-# On macOS/Linux
-python3 -m venv venv
-source venv/bin/activate
+# Install dependencies
+pip install -r backend/requirements.txt
+
+# Train models & generate artifacts
+python ml/train.py
 ```
 
-Install Python dependencies:
+### 2. Start the FastAPI Backend Server
+Start the API server on `http://127.0.0.1:8000`:
+
 ```bash
-pip install -r requirements.txt
+uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
 ```
+> **API Documentation**: Visit `http://127.0.0.1:8000/docs` for interactive Swagger UI documentation.
 
-### **3. Train the Machine Learning Models**
-Before starting the API server, train the models to generate serialized artifacts:
-```bash
-python ml_model/train_model.py
-```
-> *This script will perform data cleaning, encoding, scaling, train 4 algorithms (Logistic Regression, Decision Tree, Random Forest, XGBoost), compare accuracy, and automatically save the best model to `ml_model/model.pkl`.*
+### 3. Start the Frontend Dashboard
+Open a new terminal in the `frontend` directory:
 
-### **4. Start the Flask Backend Server**
-Start the REST API server:
-```bash
-python backend/app.py
-```
-> *The backend server will run on `http://localhost:5000`.*
-
-### **5. Setup & Start Frontend Application**
-Open a new terminal window, navigate to the frontend directory, install dependencies, and start the development server:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-> *The web application will be accessible at `http://localhost:5173`.*
+> Access the web UI at `http://localhost:5173`.
 
 ---
 
-## 📂 Folder Structure
+## 🧪 Testing & Verification
 
-```
-Employee-Attrition-Prediction/
-│
-├── frontend/               # React + Vite frontend web application
-│   ├── src/
-│   │   ├── components/     # Reusable UI components (Navbar, Sidebar, StatCard, ChartCard)
-│   │   ├── pages/          # Application views (Login, Dashboard, PredictionForm, Result, Analytics)
-│   │   ├── services/       # Axios API integration client
-│   │   └── context/        # Authentication & global state management
-│   ├── package.json
-│   ├── tailwind.config.js
-│   └── vite.config.js
-│
-├── backend/                # Flask REST API server
-│   ├── routes/             # API routing definitions
-│   ├── services/           # Prediction inference & analytics aggregation logic
-│   ├── app.py              # Main Flask server entry point
-│   └── requirements.txt
-│
-├── ml_model/               # Machine learning training & evaluation pipeline
-│   ├── train_model.py      # Automated training, evaluation & selection script
-│   ├── model.pkl           # Saved best performing ML model artifact
-│   ├── scaler.pkl          # Saved StandardScaler artifact
-│   ├── encoder.pkl         # Saved categorical encoders artifact
-│   └── model_metadata.json # Model performance metrics & feature names
-│
-├── dataset/                # Data storage & loading utilities
-│   ├── WA_Fn-UseC_-HR-Employee-Attrition.csv # IBM HR Analytics dataset (1,470 rows)
-│   └── dataset_loader.py   # Dataset verification & loading script
-│
-├── docs/                   # System documentation & architectural notes
-│   ├── architecture.md     # Architectural design & data flow diagram
-│   └── model_evaluation.md # Detailed algorithmic comparison & confusion matrices
-│
-├── screenshots/            # UI demo screenshots & visual walkthroughs
-│   └── README.md
-│
-├── README.md               # Project overview & documentation
-├── requirements.txt        # Root Python dependency specifications
-└── .gitignore              # Version control ignore rules
+Run the end-to-end verification suite to validate database initialization, ML inference engine, and FastAPI endpoints:
+
+```bash
+python tests/test_production_system.py
 ```
 
 ---
 
-## 📡 API Documentation
+## 🌐 Production Cloud Deployment (Vercel + Render)
 
-Base URL: `http://localhost:5000`
+The application is pre-configured for automated cloud deployment:
 
-### **1. Health Check**
-- **Endpoint:** `GET /health`
-- **Description:** Verifies backend API operational status and model readiness.
-- **Response:**
-  ```json
-  {
-    "status": "healthy",
-    "model_loaded": true,
-    "timestamp": "2026-07-06T10:00:00Z"
-  }
-  ```
+### **1. Backend Deployment (Render / Railway)**
+- The repository includes a production `render.yaml` specification file.
+- Connect your GitHub repository to Render as a Web Service.
+- Build Command: `pip install -r backend/requirements.txt`
+- Start Command: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
 
-### **2. Get Dashboard KPIs**
-- **Endpoint:** `GET /dashboard`
-- **Description:** Returns aggregate employee statistics for the HR dashboard.
-- **Response:**
-  ```json
-  {
-    "total_employees": 1470,
-    "high_risk_employees": 237,
-    "average_satisfaction": 2.73,
-    "average_monthly_income": 6502.93,
-    "attrition_rate": 16.12
-  }
-  ```
-
-### **3. Get Analytics Distributions**
-- **Endpoint:** `GET /analytics`
-- **Description:** Retrieves multi-dimensional aggregated data formatted for Recharts visualizations.
-- **Response:**
-  ```json
-  {
-    "department_attrition": [
-      { "name": "Sales", "Total": 446, "Left": 92, "Rate": 20.63 },
-      { "name": "Research & Development", "Total": 961, "Left": 133, "Rate": 13.84 },
-      { "name": "Human Resources", "Total": 63, "Left": 12, "Rate": 19.05 }
-    ],
-    "gender_attrition": [
-      { "name": "Male", "value": 150 },
-      { "name": "Female", "value": 87 }
-    ],
-    "age_distribution": [
-      { "age_group": "18-25", "count": 123, "attrition_rate": 35.8 },
-      { "age_group": "26-35", "count": 606, "attrition_rate": 19.3 }
-    ]
-    ...
-  }
-  ```
-
-### **4. Predict Employee Attrition**
-- **Endpoint:** `POST /predict`
-- **Description:** Predicts employee turnover probability and provides tailored retention suggestions.
-- **Request Body (JSON):**
-  ```json
-  {
-    "Age": 31,
-    "Gender": "Male",
-    "Department": "Sales",
-    "JobRole": "Sales Executive",
-    "MonthlyIncome": 5400,
-    "YearsAtCompany": 3,
-    "DistanceFromHome": 15,
-    "Overtime": "Yes",
-    "JobSatisfaction": 2,
-    "WorkLifeBalance": 2,
-    "BusinessTravel": "Travel_Frequently",
-    "Education": 3,
-    "EnvironmentSatisfaction": 1,
-    "RelationshipSatisfaction": 3
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "prediction": "Leave",
-    "probability": 78.4,
-    "risk_level": "High",
-    "retention_suggestion": "High risk identified due to Overtime and low Environment Satisfaction. Recommend reviewing workload distribution, offering flexible working hours, and conducting a 1-on-1 career development check-in.",
-    "confidence_score": 0.88
-  }
-  ```
+### **2. Frontend Deployment (Vercel / Netlify)**
+- The `frontend/` directory includes a `vercel.json` rewrite configuration for React Single Page Application (SPA) routing.
+- Import the `frontend/` root into Vercel.
+- Build Command: `npm run build`
+- Output Directory: `dist`
 
 ---
 
-## 📸 Screenshots Section
+## 🔒 Security & Best Practices
+- **Environment Management**: Configuration parameters are managed via `.env`.
+- **API Security**: CORS middleware restricts unauthorized origins; endpoints support JWT bearer tokens.
+- **Graceful Fault Tolerance**: Frontend client includes resilient offline fallback heuristics for seamless testing and demonstrations.
 
-| Dashboard Overview | Employee Prediction Form |
-| :---: | :---: |
-| *(See `screenshots/` folder)* | *(See `screenshots/` folder)* |
-
-| Prediction Result & AI Advice | Analytics Chart Suite |
-| :---: | :---: |
-| *(See `screenshots/` folder)* | *(See `screenshots/` folder)* |
-
----
-
-## 👥 Contributors
-
-- **Senior Full Stack AI Engineering Team** – Architecture, Full Stack Development, ML Pipeline Design, and UI/UX Implementation.
-
----
-
-*Built with passion for data-driven Human Resources and employee retention.*

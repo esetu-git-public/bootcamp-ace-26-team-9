@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 
 function ProtectedRoute({ children }) {
   const { session, loading } = useAuth();
+  const token = localStorage.getItem("token") || localStorage.getItem("local_auth_session");
 
   if (loading) {
     return (
@@ -13,7 +14,7 @@ function ProtectedRoute({ children }) {
     );
   }
 
-  if (!session) {
+  if (!session && !token) {
     return <Navigate to="/" replace />;
   }
 

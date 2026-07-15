@@ -9,7 +9,7 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Attach local storage JWT to every request automatically
+// Attach JWT token (local or Supabase) to every request automatically
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -19,6 +19,17 @@ api.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// Clear expired or invalid token automatically on 401 response
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("token");
+    }
+    return Promise.reject(error);
+  }
 );
 
 export default api;
