@@ -21,4 +21,15 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Clear expired or invalid token automatically on 401 response
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("token");
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;
